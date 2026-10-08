@@ -4,6 +4,7 @@ import { z } from "zod/v4";
 export function authEnv() {
   return createEnv({
     server: {
+      AUTH_REDIRECT_PROXY_URL: z.url().optional(),
       AUTH_DISCORD_ID: z.string().min(1),
       AUTH_DISCORD_SECRET: z.string().min(1),
       AUTH_SECRET:
