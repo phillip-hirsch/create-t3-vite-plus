@@ -9,12 +9,8 @@
     {
       "description": "vite-plus and its aliased core must stay on one release. The catalog alias `vite` has depName `vite` and packageName `@voidzero-dev/vite-plus-core`.",
       "matchPackageNames": ["vite-plus", "@voidzero-dev/vite-plus-core"],
-      "groupName": "vite-plus"
-    },
-    {
-      "description": "Catches the `vite` alias by depName in case the manager reports only that.",
-      "matchDepNames": ["vite"],
-      "groupName": "vite-plus"
+      "groupName": "vite-plus",
+      "minimumGroupSize": 2
     }
   ],
   "updateInternalDeps": true,
