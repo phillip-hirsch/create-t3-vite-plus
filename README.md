@@ -1,4 +1,4 @@
-# create-t3-turbo
+# create-t3-vite-plus
 
 > [!NOTE]
 >
@@ -10,15 +10,9 @@
 >
 > Make sure to follow the system requirements specified in [`package.json#engines`](./package.json#L4) before proceeding.
 
-There are two ways of initializing an app using the `create-t3-turbo` starter. You can either use this repository as a template:
+Use this repository as a template:
 
 ![use-as-template](https://github.com/t3-oss/create-t3-turbo/assets/51714798/bb6c2e5d-d8b6-416e-aeb3-b3e50e2ca994)
-
-or use Turbo's CLI to init your project (use PNPM as package manager):
-
-```bash
-npx create-turbo@latest -e https://github.com/t3-oss/create-t3-turbo
-```
 
 ## About
 
@@ -51,6 +45,8 @@ packages
   │   └─ Authentication using better-auth.
   ├─ db
   │   └─ Typesafe db calls using Drizzle & Supabase
+  ├─ generator
+  │   └─ `vp create` template for new packages
   └─ ui
       └─ Start of a UI package for the webapp using shadcn-ui
 tooling
@@ -161,9 +157,21 @@ When the component(s) has been installed, you should be good to go and start usi
 
 ### 5b. When it's time to add a new package
 
-To add a new package, simply run `pnpm exec gen run init` in the monorepo root. This will prompt you for a package name as well as if you want to install any dependencies to the new package (of course you can also do this yourself later).
+Run the package generator in the monorepo root:
 
-The generator sets up the `package.json`, `tsconfig.json` and a `index.ts`, as well as configures all the necessary configurations for tooling around your package such as formatting, linting and typechecking. When the package is created, you're ready to go build out the package.
+```bash
+pnpm vp create package
+```
+
+It asks for a package name (the `@acme/` prefix is optional) and the dependencies to install, then creates the package in `packages/` with a `package.json`, `tsconfig.json`, `src/index.ts` and a `vite.config.ts` for the cached typecheck. Dependencies that are in the pnpm catalog get `catalog:`. Vite+ then offers to add workspace packages as dependencies, installs everything and formats the new package. Lint and format are configured at the root, so the package needs no config of its own.
+
+To skip the prompts, pass the options after `--`:
+
+```bash
+pnpm vp create package --no-interactive -- --name my-package --deps "zod superjson"
+```
+
+The generator lives in `packages/generator` and is registered in the root `vite.config.ts`.
 
 ## FAQ
 

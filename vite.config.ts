@@ -22,14 +22,19 @@ const restrictEnvAccess = {
 } as const;
 
 export default defineConfig({
+  create: {
+    templates: [
+      {
+        name: "package",
+        description: "A new @acme package",
+        template: "@acme/generator",
+      },
+    ],
+  },
   fmt: {
     printWidth: 80,
     sortPackageJson: false,
-    ignorePatterns: [
-      "**/routeTree.gen.ts",
-      // Legacy Plop templates: Oxfmt would format them as Handlebars HTML.
-      "turbo/generators/templates/**",
-    ],
+    ignorePatterns: ["**/routeTree.gen.ts"],
     sortTailwindcss: {
       functions: ["cn", "cva"],
       // Loads the shared theme, so classes like `bg-primary` sort as Tailwind
@@ -60,12 +65,7 @@ export default defineConfig({
       typeAware: true,
       reportUnusedDisableDirectives: "warn",
     },
-    ignorePatterns: [
-      "**/*.config.*",
-      "packages/auth/script/**",
-      // Legacy Plop generator: never linted, and it has no tsconfig.
-      "turbo/**",
-    ],
+    ignorePatterns: ["**/*.config.*", "packages/auth/script/**"],
     rules: {
       "for-direction": "error",
       "no-array-constructor": "error",

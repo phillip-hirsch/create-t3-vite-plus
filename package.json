@@ -1,5 +1,5 @@
 {
-  "name": "create-t3-turbo",
+  "name": "create-t3-vite-plus",
   "private": true,
   "engines": {
     "node": "^22.21.0",
@@ -26,7 +26,6 @@
     "ios": "expo run:ios"
   },
   "devDependencies": {
-    "@turbo/gen": "^2.5.8",
     "@types/node": "catalog:",
     "dotenv-cli": "^10.0.0",
     "typescript": "catalog:",
