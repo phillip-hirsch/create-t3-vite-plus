@@ -2,8 +2,9 @@ import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod/v4";
 
 // Outside Vercel there is no deployment URL to fall back on, so self-hosted
-// production must set AUTH_REDIRECT_PROXY_URL to the web app's origin.
-const isSelfHostedProduction =
+// production must set AUTH_REDIRECT_PROXY_URL to the web app's origin. The
+// web app's auth server uses this same check to pick its base URL.
+export const isSelfHostedProduction =
   process.env.NODE_ENV === "production" && !process.env.VERCEL_ENV;
 
 // Keep only the origin, so a trailing slash or path can't leak into callback URLs.
