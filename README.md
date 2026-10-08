@@ -177,9 +177,9 @@ The generator lives in `packages/generator` and is registered in the root `vite.
 
 ## FAQ
 
-### Does this pattern leak backend code to my client applications?
+### Does this pattern leak the web app's API code to my client applications?
 
-No, it does not. The `api` package should only be a production dependency in the web app where it's served. The Expo app, and all other apps you may add in the future, should only add the `api` package as a dev dependency. This lets you have full typesafety in your client applications, while keeping your backend code safe.
+No, it does not. The `api` package should only be a production dependency in the web app where it's served. The mobile app, and all other apps you may add in the future, should only add the `api` package as a dev dependency. This lets you have full typesafety in your client applications, while keeping the web app's API code safe.
 
 If you need to share runtime code between the client and server, such as input validation schemas, you can create a separate `shared` package for this and import it on both sides.
 
@@ -198,7 +198,7 @@ Deploy `apps/tanstack-start` before using the mobile app in production. It serve
 
 Deploying your mobile app works differently from deploying the web app. Instead of "deploying" your app online, you need to submit production builds of your app to app stores, like [Apple App Store](https://www.apple.com/app-store) and [Google Play](https://play.google.com/store/apps). You can read the full [guide to distributing your app](https://docs.expo.dev/distribution/introduction), including best practices, in the Expo docs.
 
-1. Make sure to modify the `getBaseUrl` function to point to your backend's production URL:
+1. Make sure to modify the `getBaseUrl` function to point to the deployed web app's URL:
 
    [`apps/expo/src/utils/base-url.ts`](./apps/expo/src/utils/base-url.ts)
 
@@ -211,7 +211,7 @@ Deploying your mobile app works differently from deploying the web app. Instead 
    # Log in with your Expo account
    eas login
 
-   # Configure your Expo app
+   # Configure the mobile app
    cd apps/expo
    eas build:configure
    ```
@@ -239,7 +239,7 @@ Deploying your mobile app works differently from deploying the web app. Instead 
    The steps below summarize the [Getting started with EAS Update](https://docs.expo.dev/eas-update/getting-started/#configure-your-project) guide.
 
    ```bash
-   # Add the `expo-updates` library to your Expo app
+   # Add the `expo-updates` library to the mobile app
    cd apps/expo
    vp exec expo install expo-updates
 
