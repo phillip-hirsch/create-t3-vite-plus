@@ -22,6 +22,34 @@ const restrictEnvAccess = {
 } as const;
 
 export default defineConfig({
+  fmt: {
+    printWidth: 80,
+    sortPackageJson: false,
+    ignorePatterns: [
+      "**/routeTree.gen.ts",
+      // Legacy Plop templates: Oxfmt would format them as Handlebars HTML.
+      "turbo/generators/templates/**",
+    ],
+    sortTailwindcss: {
+      functions: ["cn", "cva"],
+      // Loads the shared theme, so classes like `bg-primary` sort as Tailwind
+      // utilities instead of unknown classes.
+      stylesheet: "./apps/tanstack-start/src/styles.css",
+    },
+    // Third-party imports, then @acme packages, then app-local (`~/` and
+    // relative) imports.
+    sortImports: {
+      customGroups: [{ groupName: "acme", elementNamePattern: ["@acme/**"] }],
+      groups: [
+        "builtin",
+        "external",
+        "acme",
+        ["internal", "subpath", "parent", "sibling", "index"],
+        "style",
+        "unknown",
+      ],
+    },
+  },
   lint: {
     // Only the rules below run: the ones the old ESLint config enabled
     // (eslint recommended, typescript-eslint recommended + type-checked +

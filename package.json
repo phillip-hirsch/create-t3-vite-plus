@@ -14,8 +14,8 @@
     "db:studio": "vp run --filter @acme/db studio",
     "dev": "vp run --filter @acme/tanstack-start dev",
     "dev:expo": "vp run --filter @acme/expo dev",
-    "format": "vp run -r format --cache --cache-location .cache/.prettiercache",
-    "format:fix": "vp run -r format --write --cache --cache-location .cache/.prettiercache",
+    "format": "vp fmt --check",
+    "format:fix": "vp fmt",
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
     "lint:ws": "pnpm dlx sherif@latest",
@@ -26,13 +26,10 @@
     "ios": "expo run:ios"
   },
   "devDependencies": {
-    "@acme/prettier-config": "workspace:*",
     "@turbo/gen": "^2.5.8",
     "@types/node": "catalog:",
     "dotenv-cli": "^10.0.0",
-    "prettier": "catalog:",
     "typescript": "catalog:",
     "vite-plus": "catalog:"
-  },
-  "prettier": "@acme/prettier-config"
+  }
 }

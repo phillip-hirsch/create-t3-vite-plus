@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { DesktopIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
+import * as React from "react";
 import * as z from "zod/v4";
 
 import { Button } from "./button";
@@ -163,7 +163,7 @@ export function ThemeToggle() {
           className="[&>svg]:absolute [&>svg]:size-5 [&>svg]:scale-0"
         >
           <SunIcon className="light:scale-100! auto:scale-0!" />
-          <MoonIcon className="auto:scale-0! dark:scale-100!" />
+          <MoonIcon className="dark:scale-100! auto:scale-0!" />
           <DesktopIcon className="auto:scale-100!" />
           <span className="sr-only">Toggle theme</span>
         </Button>

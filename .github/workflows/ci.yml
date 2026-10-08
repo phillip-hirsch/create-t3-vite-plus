@@ -41,7 +41,7 @@ jobs:
           cache: true
 
       - name: Format
-        run: vp run format
+        run: vp fmt --check
 
   typecheck:
     runs-on: ubuntu-latest

@@ -54,8 +54,6 @@ packages
   └─ ui
       └─ Start of a UI package for the webapp using shadcn-ui
 tooling
-  ├─ prettier
-  │   └─ shared prettier configuration
   ├─ tailwind
   │   └─ shared tailwind theme and configuration
   └─ typescript
