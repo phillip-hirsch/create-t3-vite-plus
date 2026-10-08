@@ -23,6 +23,8 @@ export default defineConfig({
     },
   },
   server: {
+    // Listen on all interfaces so the mobile app can reach the API.
+    host: true,
     port: 3000,
     strictPort: true,
   },
