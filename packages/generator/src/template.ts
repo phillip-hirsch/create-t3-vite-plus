@@ -93,7 +93,7 @@ export default defineConfig({
 });
 `,
         src: {
-          "index.ts": `export const name = "${options.name}";\n`,
+          "index.ts": `export const name = ${JSON.stringify(options.name)};\n`,
         },
       },
       // Install here, where a failure exits non-zero. `vp create` ignores a

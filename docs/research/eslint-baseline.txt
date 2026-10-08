@@ -18,53 +18,53 @@ not ESLint rule findings. There are zero ESLint errors or warnings.
 @acme/db:build: cache bypass, force executing 003dda4437c6bed4
 @acme/ui:lint: cache bypass, force executing 2409462894ba7c93
 @acme/tailwind-config:lint:
-@acme/tailwind-config:lint: > @acme/tailwind-config@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/tooling/tailwind
+@acme/tailwind-config:lint: > @acme/tailwind-config@ lint <repo>/tooling/tailwind
 @acme/tailwind-config:lint: > eslint --flag unstable_native_nodejs_ts_config
 @acme/tailwind-config:lint:
 @acme/validators:lint:
-@acme/validators:lint: > @acme/validators@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/validators
+@acme/validators:lint: > @acme/validators@ lint <repo>/packages/validators
 @acme/validators:lint: > eslint --flag unstable_native_nodejs_ts_config
 @acme/validators:lint:
 @acme/db:lint:
-@acme/db:lint: > @acme/db@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/db
+@acme/db:lint: > @acme/db@ lint <repo>/packages/db
 @acme/db:lint: > eslint --flag unstable_native_nodejs_ts_config
 @acme/db:lint:
 @acme/validators:build:
-@acme/validators:build: > @acme/validators@ build /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/validators
+@acme/validators:build: > @acme/validators@ build <repo>/packages/validators
 @acme/validators:build: > tsc
 @acme/validators:build:
 @acme/db:build:
-@acme/db:build: > @acme/db@ build /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/db
+@acme/db:build: > @acme/db@ build <repo>/packages/db
 @acme/db:build: > tsc
 @acme/db:build:
 @acme/ui:lint:
-@acme/ui:lint: > @acme/ui@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/ui
+@acme/ui:lint: > @acme/ui@ lint <repo>/packages/ui
 @acme/ui:lint: > eslint --flag unstable_native_nodejs_ts_config
 @acme/ui:lint:
 @acme/auth:lint: cache bypass, force executing b9e0d9d155e91f9b
 @acme/api:build: cache bypass, force executing 00f3184f6123e73f
 @acme/api:lint: cache bypass, force executing 01dbdbaba9f697d1
 @acme/api:build:
-@acme/api:build: > @acme/api@ build /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/api
+@acme/api:build: > @acme/api@ build <repo>/packages/api
 @acme/api:build: > tsc
 @acme/api:build:
 @acme/api:lint:
-@acme/api:lint: > @acme/api@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/api
+@acme/api:lint: > @acme/api@ lint <repo>/packages/api
 @acme/api:lint: > eslint --flag unstable_native_nodejs_ts_config
 @acme/api:lint:
 @acme/auth:lint:
-@acme/auth:lint: > @acme/auth@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/auth
+@acme/auth:lint: > @acme/auth@ lint <repo>/packages/auth
 @acme/auth:lint: > eslint --flag unstable_native_nodejs_ts_config
 @acme/auth:lint:
 @acme/tanstack-start:lint: cache bypass, force executing 8e8a39875dadf4db
 @acme/expo:lint: cache bypass, force executing b09c34742440bd0f
 @acme/ui:lint: [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
 @acme/expo:lint:
-@acme/expo:lint: > @acme/expo@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/apps/expo
+@acme/expo:lint: > @acme/expo@ lint <repo>/apps/expo
 @acme/expo:lint: > eslint --flag unstable_native_nodejs_ts_config
 @acme/expo:lint:
 @acme/tanstack-start:lint:
-@acme/tanstack-start:lint: > @acme/tanstack-start@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/apps/tanstack-start
+@acme/tanstack-start:lint: > @acme/tanstack-start@ lint <repo>/apps/tanstack-start
 @acme/tanstack-start:lint: > eslint --flag unstable_native_nodejs_ts_config
 @acme/tanstack-start:lint:
 @acme/expo:lint: [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`

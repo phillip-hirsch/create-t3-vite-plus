@@ -191,7 +191,7 @@ Deploy `apps/tanstack-start` before using the mobile app in production. It serve
 
 1. Configure `POSTGRES_URL`, `AUTH_SECRET`, `AUTH_DISCORD_ID`, and `AUTH_DISCORD_SECRET` in your deployment environment.
 2. Build with `vp run build`. The default Nitro output runs with `node apps/tanstack-start/.output/server/index.mjs`.
-3. Set `AUTH_REDIRECT_PROXY_URL` to the deployed web app's origin, or use Vercel's `VERCEL_PROJECT_PRODUCTION_URL`. Register the Discord callback described above.
+3. Set `AUTH_REDIRECT_PROXY_URL` to the deployed web app's origin. It's required outside Vercel; on Vercel it defaults to `VERCEL_PROJECT_PRODUCTION_URL`. Register the Discord callback described above.
 4. Point the mobile app's [`getBaseUrl`](./apps/expo/src/utils/base-url.ts) at the same deployed web app.
 
 ### Expo
