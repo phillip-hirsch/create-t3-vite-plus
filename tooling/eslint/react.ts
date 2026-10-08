@@ -7,6 +7,13 @@ export const reactConfig = defineConfig(
     files: ["**/*.ts", "**/*.tsx"],
     ...reactPlugin.configs.flat.recommended,
     ...reactPlugin.configs.flat["jsx-runtime"],
+    rules: {
+      ...reactPlugin.configs.flat.recommended?.rules,
+      ...reactPlugin.configs.flat["jsx-runtime"]?.rules,
+    },
+    settings: {
+      react: { version: "detect" },
+    },
     languageOptions: {
       ...reactPlugin.configs.flat.recommended?.languageOptions,
       ...reactPlugin.configs.flat["jsx-runtime"]?.languageOptions,

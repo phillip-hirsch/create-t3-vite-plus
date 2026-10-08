@@ -1,0 +1,75 @@
+ESLint parity baseline for #2 (2026-10-07)
+Produced at the workspace root with Node 22.23.3 / pnpm 10.19.0:
+  CI=1 NO_COLOR=1 pnpm exec turbo run lint --continue --force
+Full stdout and stderr follow; trailing whitespace is trimmed.
+Turbo's cache is bypassed and ESLint runs without --cache. Exit status: 0.
+Both React presets apply; jsx-key is error and both JSX-runtime rules are off.
+Fixed two no-children-prop findings; no rules disabled.
+The baseline-browser-mapping notices predate this fix and are dependency notices,
+not ESLint rule findings. There are zero ESLint errors or warnings.
+
+• Packages in scope: @acme/api, @acme/auth, @acme/db, @acme/eslint-config, @acme/expo, @acme/github, @acme/prettier-config, @acme/tailwind-config, @acme/tanstack-start, @acme/tsconfig, @acme/ui, @acme/validators
+• Running lint in 12 packages
+• Remote caching disabled
+@acme/validators:build: cache bypass, force executing 3d86f24c591f7a22
+@acme/tailwind-config:lint: cache bypass, force executing 8cc8efe6e364c002
+@acme/validators:lint: cache bypass, force executing 611c1b70a391e97f
+@acme/db:lint: cache bypass, force executing 5e986ccab20fa319
+@acme/db:build: cache bypass, force executing 003dda4437c6bed4
+@acme/ui:lint: cache bypass, force executing 2409462894ba7c93
+@acme/tailwind-config:lint:
+@acme/tailwind-config:lint: > @acme/tailwind-config@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/tooling/tailwind
+@acme/tailwind-config:lint: > eslint --flag unstable_native_nodejs_ts_config
+@acme/tailwind-config:lint:
+@acme/validators:lint:
+@acme/validators:lint: > @acme/validators@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/validators
+@acme/validators:lint: > eslint --flag unstable_native_nodejs_ts_config
+@acme/validators:lint:
+@acme/db:lint:
+@acme/db:lint: > @acme/db@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/db
+@acme/db:lint: > eslint --flag unstable_native_nodejs_ts_config
+@acme/db:lint:
+@acme/validators:build:
+@acme/validators:build: > @acme/validators@ build /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/validators
+@acme/validators:build: > tsc
+@acme/validators:build:
+@acme/db:build:
+@acme/db:build: > @acme/db@ build /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/db
+@acme/db:build: > tsc
+@acme/db:build:
+@acme/ui:lint:
+@acme/ui:lint: > @acme/ui@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/ui
+@acme/ui:lint: > eslint --flag unstable_native_nodejs_ts_config
+@acme/ui:lint:
+@acme/auth:lint: cache bypass, force executing b9e0d9d155e91f9b
+@acme/api:build: cache bypass, force executing 00f3184f6123e73f
+@acme/api:lint: cache bypass, force executing 01dbdbaba9f697d1
+@acme/api:build:
+@acme/api:build: > @acme/api@ build /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/api
+@acme/api:build: > tsc
+@acme/api:build:
+@acme/api:lint:
+@acme/api:lint: > @acme/api@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/api
+@acme/api:lint: > eslint --flag unstable_native_nodejs_ts_config
+@acme/api:lint:
+@acme/auth:lint:
+@acme/auth:lint: > @acme/auth@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/packages/auth
+@acme/auth:lint: > eslint --flag unstable_native_nodejs_ts_config
+@acme/auth:lint:
+@acme/tanstack-start:lint: cache bypass, force executing 8e8a39875dadf4db
+@acme/expo:lint: cache bypass, force executing b09c34742440bd0f
+@acme/ui:lint: [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+@acme/expo:lint:
+@acme/expo:lint: > @acme/expo@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/apps/expo
+@acme/expo:lint: > eslint --flag unstable_native_nodejs_ts_config
+@acme/expo:lint:
+@acme/tanstack-start:lint:
+@acme/tanstack-start:lint: > @acme/tanstack-start@ lint /Users/phillip/Developer/create-t3-vite-plus/.claude/worktrees/ticket-2/apps/tanstack-start
+@acme/tanstack-start:lint: > eslint --flag unstable_native_nodejs_ts_config
+@acme/tanstack-start:lint:
+@acme/expo:lint: [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+@acme/tanstack-start:lint: [baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+
+ Tasks:    11 successful, 11 total
+Cached:    0 cached, 11 total
+  Time:    6.184s
