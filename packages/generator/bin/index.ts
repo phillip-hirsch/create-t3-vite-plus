@@ -4,7 +4,7 @@ import fs from "node:fs";
 import { parseArgs } from "node:util";
 
 import * as prompts from "@clack/prompts";
-import { runTemplate } from "bingo";
+import { createSystemContext, runTemplate } from "bingo";
 
 import template from "../src/template.ts";
 
@@ -58,11 +58,21 @@ async function main() {
   if (error) throw new Error(error);
   name = toName(name);
 
+  // Bingo's runner doesn't reject when a script fails, which would let a
+  // failed dependency install exit 0.
+  const { runner } = createSystemContext({ directory: name });
   await runTemplate(template, {
     directory: name,
     mode: "setup",
     options: { name, deps: deps?.split(/\s+/).filter(Boolean) ?? [] },
     skips: { requests: values["skip-requests"] },
+    runner: async (command) => {
+      const result = await runner(command);
+      if (result instanceof Error) {
+        throw new Error(`\`${command}\` failed in ${name}/\n${result.message}`);
+      }
+      return result;
+    },
   });
 }
 
