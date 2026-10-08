@@ -31,9 +31,16 @@ catalogs:
 
 linkWorkspacePackages: true
 
-onlyBuiltDependencies:
-  - "@tailwindcss/oxide"
-  - esbuild
+allowBuilds:
+  "@tailwindcss/oxide": true
+  esbuild: true
+  # Never built before pnpm 11, which started requiring an explicit choice.
+  "@prisma/client": false
+  "@prisma/engines": false
+  better-sqlite3: false
+  bufferutil: false
+  prisma: false
+  utf-8-validate: false
 
 overrides:
   "@types/minimatch": 5.1.2
