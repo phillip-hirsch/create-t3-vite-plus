@@ -4,6 +4,8 @@ import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import { defineConfig, esmExternalRequirePlugin, lazyPlugins } from "vite-plus";
 
+import { typecheck } from "@acme/tsconfig/typecheck";
+
 export default defineConfig({
   resolve: {
     tsconfigPaths: true,
@@ -57,11 +59,7 @@ export default defineConfig({
           ],
         },
       },
-      typecheck: {
-        command: "tsc --noEmit",
-        // tsc rewrites its own build info, which would block caching.
-        cache: { input: [{ auto: true }, "!.cache/tsbuildinfo.json"] },
-      },
+      typecheck,
     },
   },
 });

@@ -1,7 +1,9 @@
 {
   "name": "@acme/tsconfig",
   "private": true,
-  "files": [
-    "*.json"
-  ]
+  "type": "module",
+  "exports": {
+    "./base.json": "./base.json",
+    "./typecheck": "./typecheck.ts"
+  }
 }
