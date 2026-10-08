@@ -47,9 +47,10 @@
     "@acme/tailwind-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@types/react": "catalog:react19",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
-    "typescript": "catalog:",
+    "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vite-plus": "catalog:"
   },
   "prettier": "@acme/prettier-config"
