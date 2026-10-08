@@ -24,7 +24,7 @@ npx create-turbo@latest -e https://github.com/t3-oss/create-t3-turbo
 
 Ever wondered how to migrate your T3 application into a monorepo? Stop right here! This is the perfect starter repo to get you running with the perfect stack!
 
-It uses [Turborepo](https://turborepo.com) and contains:
+It uses [Vite+](https://viteplus.dev) and contains:
 
 ```text
 .github
@@ -87,7 +87,7 @@ cp .env.example .env
 pnpm db:push
 ```
 
-The web app runs at `http://localhost:3000`. The mobile app uses the same port for API requests. To start only the web app, run `pnpm --filter @acme/tanstack-start dev`.
+Run `pnpm dev` to start the web app at `http://localhost:3000`. The mobile app uses the same port for API requests. Start it with `pnpm dev:expo` in a second terminal, so Expo's keyboard shortcuts and QR code get their own terminal.
 
 ### 2. Generate Better Auth Schema
 
@@ -119,13 +119,13 @@ For more information about the Better Auth CLI, see the [official documentation]
 
 1. Make sure you have XCode and XCommand Line Tools installed [as shown on expo docs](https://docs.expo.dev/workflow/ios-simulator).
 
-   > **NOTE:** If you just installed XCode, or if you have updated it, you need to open the simulator manually once. Run `npx expo start` from `apps/expo`, and then enter `I` to launch Expo Go. After the manual launch, you can run `pnpm dev` in the root directory.
+   > **NOTE:** If you just installed XCode, or if you have updated it, you need to open the simulator manually once. Run `npx expo start` from `apps/expo`, and then enter `I` to launch Expo Go. After the manual launch, you can run `pnpm dev:expo` in the root directory.
 
    ```diff
    +  "dev": "expo start --ios",
    ```
 
-2. Run `pnpm dev` at the project root folder.
+2. Run `pnpm dev:expo` at the project root folder.
 
 #### Use Android Emulator
 
@@ -137,7 +137,7 @@ For more information about the Better Auth CLI, see the [official documentation]
    +  "dev": "expo start --android",
    ```
 
-3. Run `pnpm dev` at the project root folder.
+3. Run `pnpm dev:expo` at the project root folder.
 
 ### 4. Configuring Better-Auth to work with Expo
 
@@ -165,7 +165,7 @@ When the component(s) has been installed, you should be good to go and start usi
 
 ### 5b. When it's time to add a new package
 
-To add a new package, simply run `pnpm turbo gen init` in the monorepo root. This will prompt you for a package name as well as if you want to install any dependencies to the new package (of course you can also do this yourself later).
+To add a new package, simply run `pnpm exec gen run init` in the monorepo root. This will prompt you for a package name as well as if you want to install any dependencies to the new package (of course you can also do this yourself later).
 
 The generator sets up the `package.json`, `tsconfig.json` and a `index.ts`, as well as configures all the necessary configurations for tooling around your package such as formatting, linting and typechecking. When the package is created, you're ready to go build out the package.
 
@@ -184,7 +184,7 @@ If you need to share runtime code between the client and server, such as input v
 Deploy `apps/tanstack-start` before using the mobile app in production. It serves both the tRPC API and the auth routes.
 
 1. Configure `POSTGRES_URL`, `AUTH_SECRET`, `AUTH_DISCORD_ID`, and `AUTH_DISCORD_SECRET` in your deployment environment.
-2. Build with `pnpm --filter @acme/tanstack-start build`. The default Nitro output runs with `node apps/tanstack-start/.output/server/index.mjs`.
+2. Build with `pnpm build`. The default Nitro output runs with `node apps/tanstack-start/.output/server/index.mjs`.
 3. Set `AUTH_REDIRECT_PROXY_URL` to the deployed web app's origin, or use Vercel's `VERCEL_PROJECT_PRODUCTION_URL`. Register the Discord callback described above.
 4. Point the mobile app's [`getBaseUrl`](./apps/expo/src/utils/base-url.ts) at the same deployed web app.
 

@@ -8,10 +8,9 @@
   },
   "license": "MIT",
   "scripts": {
-    "clean": "git clean -xdf .cache .turbo node_modules",
+    "clean": "git clean -xdf .cache node_modules",
     "format": "prettier --check . --ignore-path ../../.gitignore",
-    "lint": "eslint --flag unstable_native_nodejs_ts_config",
-    "typecheck": "tsc --noEmit"
+    "lint": "eslint --flag unstable_native_nodejs_ts_config"
   },
   "dependencies": {
     "@tailwindcss/postcss": "catalog:",
@@ -25,7 +24,8 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
   },
   "prettier": "@acme/prettier-config"
 }

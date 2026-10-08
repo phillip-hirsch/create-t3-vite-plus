@@ -4,12 +4,11 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "pnpm with-env vite dev",
-    "build": "vite build",
-    "start": "vite start",
+    "clean": "git clean -xdf .cache .nitro .output .tanstack node_modules",
+    "dev": "pnpm with-env vp dev",
+    "start": "node .output/server/index.mjs",
     "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore",
     "lint": "SKIP_ENV_VALIDATION=1 eslint --flag unstable_native_nodejs_ts_config",
-    "typecheck": "tsc --noEmit",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
@@ -50,7 +49,8 @@
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
   },
   "prettier": "@acme/prettier-config"
 }
