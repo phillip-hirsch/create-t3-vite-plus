@@ -56,6 +56,7 @@ export default defineConfig({
             "SERVER_PRESET",
             "VERCEL",
             "VERCEL_*",
+            "NOW_BUILDER",
             "NITRO_COMPATIBILITY_DATE",
             "SERVER_COMPATIBILITY_DATE",
             "COMPATIBILITY_DATE",
