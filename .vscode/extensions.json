@@ -2,7 +2,6 @@
   "recommendations": [
     "oxc.oxc-vscode",
     "expo.vscode-expo-tools",
-    "esbenp.prettier-vscode",
     "TypeScriptTeam.native-preview",
     "yoavbls.pretty-ts-errors",
     "bradlc.vscode-tailwindcss"
