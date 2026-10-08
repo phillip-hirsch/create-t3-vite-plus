@@ -2,11 +2,12 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.oxc": "explicit"
   },
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
   "[typescript,typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
   "files.associations": {
     "*.css": "tailwindcss"
   },
@@ -17,7 +18,7 @@
     "**/routeTree.gen.ts": true
   },
   "oxc.disableNestedConfig": true,
-  "prettier.ignorePath": ".gitignore",
+  "oxc.fmt.disableNestedConfig": true,
   "tailwindCSS.classFunctions": ["cva", "cx", "cn"],
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.tsdk": "node_modules/typescript/lib"

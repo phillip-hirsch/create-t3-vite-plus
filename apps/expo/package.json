@@ -8,8 +8,7 @@
     "dev:android": "expo start --android",
     "dev:ios": "expo start --ios",
     "android": "expo run:android",
-    "ios": "expo run:ios",
-    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore"
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@better-auth/expo": "catalog:",
@@ -43,14 +42,11 @@
   },
   "devDependencies": {
     "@acme/api": "workspace:*",
-    "@acme/prettier-config": "workspace:*",
     "@acme/tailwind-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@types/react": "catalog:react19",
-    "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite-plus": "catalog:"
-  },
-  "prettier": "@acme/prettier-config"
+  }
 }

@@ -7,7 +7,6 @@
     "clean": "git clean -xdf .cache .nitro .output .tanstack node_modules",
     "dev": "pnpm with-env vp dev",
     "start": "node .output/server/index.mjs",
-    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
@@ -35,7 +34,6 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@acme/prettier-config": "workspace:*",
     "@acme/tailwind-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@tailwindcss/vite": "catalog:",
@@ -43,11 +41,9 @@
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "catalog:",
-    "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plus": "catalog:"
-  },
-  "prettier": "@acme/prettier-config"
+  }
 }
