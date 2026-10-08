@@ -39,7 +39,7 @@ export default defineConfig({
       build: {
         command: "vp build",
         // Cached tasks get a clean environment, so pass through (and
-        // fingerprint) the variables the app's env schema reads.
+        // fingerprint) the variables the app's env schema and Nitro read.
         cache: {
           // Nitro reads its previous output before overwriting it.
           input: [{ auto: true }, "!.nitro/**", "!.output/**"],
@@ -49,6 +49,11 @@ export default defineConfig({
             "AUTH_*",
             "NODE_ENV",
             "PORT",
+            "NITRO_PRESET",
+            "SERVER_PRESET",
+            "NITRO_COMPATIBILITY_DATE",
+            "SERVER_COMPATIBILITY_DATE",
+            "COMPATIBILITY_DATE",
           ],
         },
       },
