@@ -2,7 +2,7 @@
 
 > [!NOTE]
 >
-> create-t3-turbo now includes the option to use Tanstack Start for the web app!
+> The web app uses TanStack Start and serves the API for the Expo mobile app.
 
 ## Installation
 
@@ -39,11 +39,6 @@ apps
   │   ├─ Navigation using Expo Router
   │   ├─ Tailwind CSS v4 using NativeWind v5
   │   └─ Typesafe API calls using tRPC
-  ├─ nextjs
-  │   ├─ Next.js 15
-  │   ├─ React 19
-  │   ├─ Tailwind CSS v4
-  │   └─ E2E Typesafe API Server & Client
   └─ tanstack-start
       ├─ Tanstack Start v1 (rc)
       ├─ React 19
@@ -80,10 +75,6 @@ To get it running, follow the steps below:
 
 ### 1. Setup dependencies
 
-> [!NOTE]
->
-> While the repo does contain both a Next.js and Tanstack Start version of a web app, you can pick which one you like to use and delete the other folder before starting the setup.
-
 ```bash
 # Install dependencies
 pnpm i
@@ -95,6 +86,8 @@ cp .env.example .env
 # Push the Drizzle schema to the database
 pnpm db:push
 ```
+
+The web app runs at `http://localhost:3000`. The mobile app uses the same port for API requests. To start only the web app, run `pnpm --filter @acme/tanstack-start dev`.
 
 ### 2. Generate Better Auth Schema
 
@@ -152,9 +145,9 @@ In order to get Better-Auth to work with Expo, you must either:
 
 #### Deploy the Auth Proxy (RECOMMENDED)
 
-Better-auth comes with an [auth proxy plugin](https://www.better-auth.com/docs/plugins/oauth-proxy). By deploying the Next.js app, you can get OAuth working in preview deployments and development for Expo apps.
+Better Auth comes with an [auth proxy plugin](https://www.better-auth.com/docs/plugins/oauth-proxy). Deploy the web app in `apps/tanstack-start` and set `AUTH_REDIRECT_PROXY_URL` to its production origin, such as `https://your-web-app.example.com`, in your local and deployed environments. On Vercel, it defaults to `https://$VERCEL_PROJECT_PRODUCTION_URL`. Without either setting, it uses the current web app URL for local development.
 
-By using the proxy plugin, the Next.js apps will forward any auth requests to the proxy server, which will handle the OAuth flow and then redirect back to the Next.js app. This makes it easy to get OAuth working since you'll have a stable URL that is publicly accessible and doesn't change for every deployment and doesn't rely on what port the app is running on. So if port 3000 is taken and your Next.js app starts at port 3001 instead, your auth should still work without having to reconfigure the OAuth provider.
+The auth package uses this URL for both the OAuth proxy and the Discord callback. Register `<production-origin>/api/auth/callback/discord` with Discord. The mobile app's sign-in uses the deployed web app to complete the OAuth flow.
 
 #### Add your local IP to your OAuth provider
 
@@ -178,48 +171,30 @@ The generator sets up the `package.json`, `tsconfig.json` and a `index.ts`, as w
 
 ## FAQ
 
-### Does the starter include Solito?
-
-No. Solito will not be included in this repo. It is a great tool if you want to share code between your Next.js and Expo app. However, the main purpose of this repo is not the integration between Next.js and Expo — it's the code splitting of your T3 App into a monorepo. The Expo app is just a bonus example of how you can utilize the monorepo with multiple apps but can just as well be any app such as Vite, Electron, etc.
-
-Integrating Solito into this repo isn't hard, and there are a few [official templates](https://github.com/nandorojo/solito/tree/master/example-monorepos) by the creators of Solito that you can use as a reference.
-
 ### Does this pattern leak backend code to my client applications?
 
-No, it does not. The `api` package should only be a production dependency in the Next.js application where it's served. The Expo app, and all other apps you may add in the future, should only add the `api` package as a dev dependency. This lets you have full typesafety in your client applications, while keeping your backend code safe.
+No, it does not. The `api` package should only be a production dependency in the web app where it's served. The Expo app, and all other apps you may add in the future, should only add the `api` package as a dev dependency. This lets you have full typesafety in your client applications, while keeping your backend code safe.
 
 If you need to share runtime code between the client and server, such as input validation schemas, you can create a separate `shared` package for this and import it on both sides.
 
 ## Deployment
 
-### Next.js
+### Web app
 
-#### Prerequisites
+Deploy `apps/tanstack-start` before using the mobile app in production. It serves both the tRPC API and the auth routes.
 
-> **Note**
-> Please note that the Next.js application with tRPC must be deployed in order for the Expo app to communicate with the server in a production environment.
-
-#### Deploy to Vercel
-
-Let's deploy the Next.js application to [Vercel](https://vercel.com). If you've never deployed a Turborepo app there, don't worry, the steps are quite straightforward. You can also read the [official Turborepo guide](https://vercel.com/docs/concepts/monorepos/turborepo) on deploying to Vercel.
-
-1. Create a new project on Vercel, select the `apps/nextjs` folder as the root directory. Vercel's zero-config system should handle all configurations for you.
-
-2. Add your `POSTGRES_URL` environment variable.
-
-3. Done! Your app should successfully deploy. Assign your domain and use that instead of `localhost` for the `url` in the Expo app so that your Expo app can communicate with your backend when you are not in development.
-
-### Auth Proxy
-
-The auth proxy comes as a better-auth plugin. This is required for the Next.js app to be able to authenticate users in preview deployments. The auth proxy is not used for OAuth request in production deployments. The easiest way to get it running is to deploy the Next.js app to vercel.
+1. Configure `POSTGRES_URL`, `AUTH_SECRET`, `AUTH_DISCORD_ID`, and `AUTH_DISCORD_SECRET` in your deployment environment.
+2. Build with `pnpm --filter @acme/tanstack-start build`. The default Nitro output runs with `node apps/tanstack-start/.output/server/index.mjs`.
+3. Set `AUTH_REDIRECT_PROXY_URL` to the deployed web app's origin, or use Vercel's `VERCEL_PROJECT_PRODUCTION_URL`. Register the Discord callback described above.
+4. Point the mobile app's [`getBaseUrl`](./apps/expo/src/utils/base-url.ts) at the same deployed web app.
 
 ### Expo
 
-Deploying your Expo application works slightly differently compared to Next.js on the web. Instead of "deploying" your app online, you need to submit production builds of your app to app stores, like [Apple App Store](https://www.apple.com/app-store) and [Google Play](https://play.google.com/store/apps). You can read the full [guide to distributing your app](https://docs.expo.dev/distribution/introduction), including best practices, in the Expo docs.
+Deploying your mobile app works differently from deploying the web app. Instead of "deploying" your app online, you need to submit production builds of your app to app stores, like [Apple App Store](https://www.apple.com/app-store) and [Google Play](https://play.google.com/store/apps). You can read the full [guide to distributing your app](https://docs.expo.dev/distribution/introduction), including best practices, in the Expo docs.
 
 1. Make sure to modify the `getBaseUrl` function to point to your backend's production URL:
 
-   <https://github.com/t3-oss/create-t3-turbo/blob/656965aff7db271e5e080242c4a3ce4dad5d25f8/apps/expo/src/utils/api.tsx#L20-L37>
+   [`apps/expo/src/utils/base-url.ts`](./apps/expo/src/utils/base-url.ts)
 
 2. Let's start by setting up [EAS Build](https://docs.expo.dev/build/introduction), which is short for Expo Application Services. The build service helps you create builds of your app, without requiring a full native development setup. The commands below are a summary of [Creating your first build](https://docs.expo.dev/build/setup).
 
