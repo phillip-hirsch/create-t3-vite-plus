@@ -10,10 +10,13 @@ export const isSelfHostedProduction =
 // Keep only the origin, so a trailing slash or path can't leak into callback URLs.
 const origin = z
   .url({
+    // Not z.httpUrl(): its domain check rejects localhost and IP addresses.
+    protocol: /^https?$/,
+    hostname: /./,
     error: (issue) =>
       issue.input === undefined
         ? "Required in self-hosted production: set it to the web app's origin"
-        : undefined,
+        : "Must be an http(s) URL",
   })
   .transform((url) => new URL(url).origin);
 
