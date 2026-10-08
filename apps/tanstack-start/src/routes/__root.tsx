@@ -11,7 +11,11 @@ import type { TRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import type * as React from "react";
 
 import type { AppRouter } from "@acme/api";
-import { ThemeProvider, ThemeToggle } from "@acme/ui/theme";
+import {
+  ThemeProvider,
+  ThemeToggle,
+  themeDetectorScript,
+} from "@acme/ui/theme";
 import { Toaster } from "@acme/ui/toast";
 
 import appCss from "~/styles.css?url";
@@ -39,6 +43,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <ThemeProvider>
       <html lang="en" suppressHydrationWarning>
         <head>
+          {/* Sets the theme class before the first paint. */}
+          <script
+            dangerouslySetInnerHTML={{ __html: themeDetectorScript }}
+            suppressHydrationWarning
+          />
           <HeadContent />
         </head>
         <body className="min-h-screen bg-background font-sans text-foreground antialiased">

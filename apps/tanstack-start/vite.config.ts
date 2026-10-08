@@ -4,6 +4,8 @@ import viteReact from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import { defineConfig, esmExternalRequirePlugin, lazyPlugins } from "vite-plus";
 
+import { typecheck } from "@acme/tsconfig/typecheck";
+
 export default defineConfig({
   resolve: {
     tsconfigPaths: true,
@@ -23,6 +25,8 @@ export default defineConfig({
     },
   },
   server: {
+    // Listen on all interfaces so the mobile app can reach the API.
+    host: true,
     port: 3000,
     strictPort: true,
   },
@@ -37,7 +41,7 @@ export default defineConfig({
       build: {
         command: "vp build",
         // Cached tasks get a clean environment, so pass through (and
-        // fingerprint) the variables the app's env schema reads.
+        // fingerprint) the variables the app's env schema and Nitro read.
         cache: {
           // Nitro reads its previous output before overwriting it.
           input: [{ auto: true }, "!.nitro/**", "!.output/**"],
@@ -47,14 +51,15 @@ export default defineConfig({
             "AUTH_*",
             "NODE_ENV",
             "PORT",
+            "NITRO_PRESET",
+            "SERVER_PRESET",
+            "NITRO_COMPATIBILITY_DATE",
+            "SERVER_COMPATIBILITY_DATE",
+            "COMPATIBILITY_DATE",
           ],
         },
       },
-      typecheck: {
-        command: "tsc --noEmit",
-        // tsc rewrites its own build info, which would block caching.
-        cache: { input: [{ auto: true }, "!.cache/tsbuildinfo.json"] },
-      },
+      typecheck,
     },
   },
 });
