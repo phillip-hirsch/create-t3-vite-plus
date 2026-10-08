@@ -8,7 +8,6 @@
     "dev": "pnpm with-env vp dev",
     "start": "node .output/server/index.mjs",
     "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore",
-    "lint": "SKIP_ENV_VALIDATION=1 eslint --flag unstable_native_nodejs_ts_config",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
@@ -36,7 +35,6 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:*",
     "@acme/prettier-config": "workspace:*",
     "@acme/tailwind-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
@@ -45,7 +43,6 @@
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "catalog:",
-    "eslint": "catalog:",
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
