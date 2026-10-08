@@ -26,7 +26,6 @@
     "ios": "expo run:ios"
   },
   "devDependencies": {
-    "@turbo/gen": "^2.5.8",
     "@types/node": "catalog:",
     "dotenv-cli": "^10.0.0",
     "typescript": "catalog:",
