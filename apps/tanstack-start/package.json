@@ -30,7 +30,7 @@
     "@trpc/server": "catalog:",
     "@trpc/tanstack-react-query": "catalog:",
     "better-auth": "catalog:",
-    "nitro": "3.0.1-alpha.1",
+    "nitro": "3.0.260903-beta",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "superjson": "2.2.3",
@@ -50,8 +50,7 @@
     "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite": "catalog:"
   },
   "prettier": "@acme/prettier-config"
 }
