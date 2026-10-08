@@ -96,7 +96,11 @@ export default defineConfig({
           "index.ts": `export const name = "${options.name}";\n`,
         },
       },
-      scripts: otherDeps.length > 0 ? [`vp add ${otherDeps.join(" ")}`] : [],
+      // Install here, where a failure exits non-zero. `vp create` ignores a
+      // failed install of its own, which then finds nothing left to do.
+      scripts: [
+        otherDeps.length > 0 ? `vp add ${otherDeps.join(" ")}` : "vp install",
+      ],
     };
   },
 });
