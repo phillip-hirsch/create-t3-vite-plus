@@ -57,6 +57,7 @@ export default defineConfig({
             "VERCEL",
             "VERCEL_*",
             "NOW_BUILDER",
+            "GITHUB_ACTIONS",
             "NITRO_COMPATIBILITY_DATE",
             "SERVER_COMPATIBILITY_DATE",
             "COMPATIBILITY_DATE",
