@@ -19,6 +19,5 @@
   "oxc.disableNestedConfig": true,
   "prettier.ignorePath": ".gitignore",
   "tailwindCSS.classFunctions": ["cva", "cx", "cn"],
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "js/ts.experimental.useTsgo": true
 }
