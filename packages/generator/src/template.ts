@@ -27,7 +27,7 @@ export default createTemplate({
 
   produce({ options }) {
     // Dependencies in the default catalog get `catalog:`, like in the other
-    // packages. `pnpm add` picks the latest version of the rest.
+    // packages. `vp add` picks the latest version of the rest.
     const catalogDeps = options.deps.filter(inCatalog).sort();
     const otherDeps = options.deps.filter((dep) => !inCatalog(dep));
 
@@ -81,7 +81,7 @@ export default defineConfig({
           "index.ts": `export const name = "${options.name}";\n`,
         },
       },
-      scripts: otherDeps.length > 0 ? [`pnpm add ${otherDeps.join(" ")}`] : [],
+      scripts: otherDeps.length > 0 ? [`vp add ${otherDeps.join(" ")}`] : [],
     };
   },
 });

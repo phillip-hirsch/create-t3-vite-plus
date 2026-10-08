@@ -5,9 +5,8 @@
   "type": "module",
   "scripts": {
     "clean": "git clean -xdf .cache .nitro .output .tanstack node_modules",
-    "dev": "pnpm with-env vp dev",
-    "start": "node .output/server/index.mjs",
-    "with-env": "dotenv -e ../../.env --"
+    "dev": "dotenv -e ../../.env -- vp dev",
+    "start": "node .output/server/index.mjs"
   },
   "dependencies": {
     "@acme/api": "workspace:*",

@@ -19,9 +19,8 @@
   "license": "MIT",
   "scripts": {
     "clean": "git clean -xdf .cache dist node_modules",
-    "push": "pnpm with-env drizzle-kit push",
-    "studio": "pnpm with-env drizzle-kit studio",
-    "with-env": "dotenv -e ../../.env --"
+    "push": "dotenv -e ../../.env -- drizzle-kit push",
+    "studio": "dotenv -e ../../.env -- drizzle-kit studio"
   },
   "dependencies": {
     "@vercel/postgres": "^0.10.0",

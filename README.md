@@ -9,6 +9,8 @@
 > [!NOTE]
 >
 > Make sure to follow the system requirements specified in [`package.json#engines`](./package.json#L4) before proceeding.
+>
+> The commands below use the global `vp` CLI. Install it with `curl -fsSL https://vite.plus | bash`, or see the [Vite+ docs](https://viteplus.dev/guide/global-cli) for Windows.
 
 Use this repository as a template:
 
@@ -69,17 +71,17 @@ To get it running, follow the steps below:
 
 ```bash
 # Install dependencies
-pnpm i
+vp install
 
 # Configure environment variables
 # There is an `.env.example` in the root directory you can use for reference
 cp .env.example .env
 
 # Push the Drizzle schema to the database
-pnpm db:push
+vp run db:push
 ```
 
-Run `pnpm dev` to start the web app at `http://localhost:3000`. The mobile app uses the same port for API requests. Start it with `pnpm dev:expo` in a second terminal, so Expo's keyboard shortcuts and QR code get their own terminal.
+Run `vp run dev` to start the web app at `http://localhost:3000`. The mobile app uses the same port for API requests. Start it with `vp run dev:expo` in a second terminal, so Expo's keyboard shortcuts and QR code get their own terminal.
 
 ### 2. Generate Better Auth Schema
 
@@ -87,7 +89,7 @@ This project uses [Better Auth](https://www.better-auth.com) for authentication.
 
 ```bash
 # Generate the Better Auth schema
-pnpm --filter @acme/auth generate
+vp run auth:generate
 ```
 
 This command runs the Better Auth CLI with the following configuration:
@@ -111,13 +113,13 @@ For more information about the Better Auth CLI, see the [official documentation]
 
 1. Make sure you have XCode and XCommand Line Tools installed [as shown on expo docs](https://docs.expo.dev/workflow/ios-simulator).
 
-   > **NOTE:** If you just installed XCode, or if you have updated it, you need to open the simulator manually once. Run `npx expo start` from `apps/expo`, and then enter `I` to launch Expo Go. After the manual launch, you can run `pnpm dev:expo` in the root directory.
+   > **NOTE:** If you just installed XCode, or if you have updated it, you need to open the simulator manually once. Run `vp exec expo start` from `apps/expo`, and then enter `I` to launch Expo Go. After the manual launch, you can run `vp run dev:expo` in the root directory.
 
    ```diff
    +  "dev": "expo start --ios",
    ```
 
-2. Run `pnpm dev:expo` at the project root folder.
+2. Run `vp run dev:expo` at the project root folder.
 
 #### Use Android Emulator
 
@@ -129,7 +131,7 @@ For more information about the Better Auth CLI, see the [official documentation]
    +  "dev": "expo start --android",
    ```
 
-3. Run `pnpm dev:expo` at the project root folder.
+3. Run `vp run dev:expo` at the project root folder.
 
 ### 4. Configuring Better-Auth to work with Expo
 
@@ -150,7 +152,7 @@ You can alternatively add your local IP (e.g. `192.168.x.y:$PORT`) to your OAuth
 Run the `ui-add` script to add a new UI component using the interactive `shadcn/ui` CLI:
 
 ```bash
-pnpm ui-add
+vp run ui-add
 ```
 
 When the component(s) has been installed, you should be good to go and start using it in your app.
@@ -160,7 +162,7 @@ When the component(s) has been installed, you should be good to go and start usi
 Run the package generator in the monorepo root:
 
 ```bash
-pnpm vp create package
+vp create package
 ```
 
 It asks for a package name (the `@acme/` prefix is optional) and the dependencies to install, then creates the package in `packages/` with a `package.json`, `tsconfig.json`, `src/index.ts` and a `vite.config.ts` for the cached typecheck. Dependencies that are in the pnpm catalog get `catalog:`. Vite+ then offers to add workspace packages as dependencies, installs everything and formats the new package. Lint and format are configured at the root, so the package needs no config of its own.
@@ -168,7 +170,7 @@ It asks for a package name (the `@acme/` prefix is optional) and the dependencie
 To skip the prompts, pass the options after `--`:
 
 ```bash
-pnpm vp create package --no-interactive -- --name my-package --deps "zod superjson"
+vp create package --no-interactive -- --name my-package --deps "zod superjson"
 ```
 
 The generator lives in `packages/generator` and is registered in the root `vite.config.ts`.
@@ -188,7 +190,7 @@ If you need to share runtime code between the client and server, such as input v
 Deploy `apps/tanstack-start` before using the mobile app in production. It serves both the tRPC API and the auth routes.
 
 1. Configure `POSTGRES_URL`, `AUTH_SECRET`, `AUTH_DISCORD_ID`, and `AUTH_DISCORD_SECRET` in your deployment environment.
-2. Build with `pnpm build`. The default Nitro output runs with `node apps/tanstack-start/.output/server/index.mjs`.
+2. Build with `vp run build`. The default Nitro output runs with `node apps/tanstack-start/.output/server/index.mjs`.
 3. Set `AUTH_REDIRECT_PROXY_URL` to the deployed web app's origin, or use Vercel's `VERCEL_PROJECT_PRODUCTION_URL`. Register the Discord callback described above.
 4. Point the mobile app's [`getBaseUrl`](./apps/expo/src/utils/base-url.ts) at the same deployed web app.
 
@@ -204,7 +206,7 @@ Deploying your mobile app works differently from deploying the web app. Instead 
 
    ```bash
    # Install the EAS CLI
-   pnpm add -g eas-cli
+   vp install -g eas-cli
 
    # Log in with your Expo account
    eas login
@@ -239,7 +241,7 @@ Deploying your mobile app works differently from deploying the web app. Instead 
    ```bash
    # Add the `expo-updates` library to your Expo app
    cd apps/expo
-   pnpm expo install expo-updates
+   vp exec expo install expo-updates
 
    # Configure EAS Update
    eas update:configure

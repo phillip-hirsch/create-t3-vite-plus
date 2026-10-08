@@ -10,7 +10,7 @@
   "license": "MIT",
   "scripts": {
     "clean": "git clean -xdf .cache dist node_modules",
-    "generate": "dotenv -e ../../.env -- pnpx @better-auth/cli generate --config script/auth-cli.ts --output ../db/src/auth-schema.ts"
+    "generate": "dotenv -e ../../.env -- vp dlx @better-auth/cli generate --config script/auth-cli.ts --output ../db/src/auth-schema.ts"
   },
   "dependencies": {
     "@acme/db": "workspace:*",
