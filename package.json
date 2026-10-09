@@ -1,38 +1,34 @@
 {
-  "name": "create-t3-turbo",
+  "name": "create-t3-vite-plus",
   "private": true,
   "engines": {
     "node": "^22.21.0",
-    "pnpm": "^10.19.0"
+    "pnpm": "^12.10.1"
   },
-  "packageManager": "pnpm@10.19.0",
+  "packageManager": "pnpm@12.10.1",
   "scripts": {
-    "build": "turbo run build",
-    "clean": "git clean -xdf node_modules",
-    "clean:workspaces": "turbo run clean",
-    "auth:generate": "pnpm -F @acme/auth generate",
-    "db:push": "turbo -F @acme/db push",
-    "db:studio": "turbo -F @acme/db studio",
-    "dev": "turbo watch dev --continue",
-    "dev:next": "turbo watch dev -F @acme/nextjs...",
-    "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
-    "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
-    "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",
-    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location .cache/.eslintcache",
-    "lint:ws": "pnpm dlx sherif@latest",
-    "postinstall": "pnpm lint:ws",
-    "typecheck": "turbo run typecheck",
-    "ui-add": "turbo run ui-add",
+    "build": "vp run -r build",
+    "clean": "vp run -r clean && git clean -xdf node_modules",
+    "auth:generate": "vp run --filter @acme/auth generate",
+    "db:push": "vp run --filter @acme/db push",
+    "db:studio": "vp run --filter @acme/db studio",
+    "dev": "vp run --filter @acme/tanstack-start dev",
+    "dev:expo": "vp run --filter @acme/expo dev",
+    "format": "vp fmt --check",
+    "format:fix": "vp fmt",
+    "lint": "vp lint",
+    "lint:fix": "vp lint --fix",
+    "lint:ws": "vp dlx sherif@latest",
+    "postinstall": "vp run lint:ws",
+    "typecheck": "vp run -r typecheck",
+    "ui-add": "vp run --filter @acme/ui ui-add",
     "android": "expo run:android",
     "ios": "expo run:ios"
   },
   "devDependencies": {
-    "@acme/prettier-config": "workspace:*",
-    "@turbo/gen": "^2.5.8",
+    "@types/node": "catalog:",
     "dotenv-cli": "^10.0.0",
-    "prettier": "catalog:",
-    "turbo": "^2.5.8",
-    "typescript": "catalog:"
-  },
-  "prettier": "@acme/prettier-config"
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  }
 }

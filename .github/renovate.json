@@ -5,6 +5,12 @@
     {
       "matchPackagePatterns": ["^@acme/"],
       "enabled": false
+    },
+    {
+      "description": "vite-plus and its aliased core must stay on one release. The catalog alias `vite` has depName `vite` and packageName `@voidzero-dev/vite-plus-core`.",
+      "matchPackageNames": ["vite-plus", "@voidzero-dev/vite-plus-core"],
+      "groupName": "vite-plus",
+      "minimumGroupSize": 2
     }
   ],
   "updateInternalDeps": true,

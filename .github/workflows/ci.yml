@@ -11,47 +11,60 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
-# You can leverage Vercel Remote Caching with Turbo to speed up your builds
-# @link https://turborepo.com/docs/core-concepts/remote-caching#remote-caching-on-vercel-builds
 env:
   FORCE_COLOR: 3
-  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  SKIP_ENV_VALIDATION: 1
 
+# `vp run` stops at the first failure, so each check is its own job.
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup
-        uses: ./tooling/github/setup
-
-      - name: Copy env
-        shell: bash
-        run: cp .env.example .env
+      - uses: voidzero-dev/setup-vp@v1.21.1
+        with:
+          node-version-file: .nvmrc
+          cache: true
 
       - name: Lint
-        run: pnpm lint && pnpm lint:ws
+        run: vp lint && vp run lint:ws
 
   format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup
-        uses: ./tooling/github/setup
+      - uses: voidzero-dev/setup-vp@v1.21.1
+        with:
+          node-version-file: .nvmrc
+          cache: true
 
       - name: Format
-        run: pnpm format
+        run: vp fmt --check
 
   typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
-      - name: Setup
-        uses: ./tooling/github/setup
+      - uses: voidzero-dev/setup-vp@v1.21.1
+        with:
+          node-version-file: .nvmrc
+          cache: true
 
       - name: Typecheck
-        run: pnpm typecheck
+        run: vp run typecheck
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: voidzero-dev/setup-vp@v1.21.1
+        with:
+          node-version-file: .nvmrc
+          cache: true
+
+      - name: Build
+        run: vp run build

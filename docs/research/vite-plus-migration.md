@@ -2,15 +2,15 @@
 
 Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a version or commit:
 
-| Source | Version / commit | Date |
-| --- | --- | --- |
-| `vite-plus` (CLI + docs source) | v1.1.0 release; docs read at `main` [`b5efee3`][vp-commit] (docs diff vs. the `v1.1.0` tag is limited to migrate/troubleshooting wording) | 2026-10-07 |
-| `vite-task` (the `vp run` engine) | rev [`7d69d65`][vt-commit], the rev compiled into vp 1.1.0 (`vp toolchain --global` prints `compiles vite-task … revision 7d69d65…`) | 2026-09-24 |
-| Bundled tools in vp 1.1.0 (`vp toolchain --global`) | vite 8.3.3, rolldown 1.2.12, tsdown 0.23.0, vitest 5.0.3, oxlint 1.87.0, oxlint-tsgolint 7.0.2003, oxfmt 0.72.0 | 2026-10-07 |
-| Oxc docs (oxlint/oxfmt) | `oxc-project/website` [`6852693`][oxc-commit] | 2026-10-07 |
-| Next.js docs | `vercel/next.js` [`eeb353b`][next-commit] | 2026-10-07 |
-| Expo docs | `expo/expo` [`cb88164`][expo-commit] | 2026-10-07 |
-| tsdown docs | `rolldown/tsdown` `6cbfec7` | 2026-10-06 |
+| Source                                              | Version / commit                                                                                                                          | Date       |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `vite-plus` (CLI + docs source)                     | v1.1.0 release; docs read at `main` [`b5efee3`][vp-commit] (docs diff vs. the `v1.1.0` tag is limited to migrate/troubleshooting wording) | 2026-10-07 |
+| `vite-task` (the `vp run` engine)                   | rev [`7d69d65`][vt-commit], the rev compiled into vp 1.1.0 (`vp toolchain --global` prints `compiles vite-task … revision 7d69d65…`)      | 2026-09-24 |
+| Bundled tools in vp 1.1.0 (`vp toolchain --global`) | vite 8.3.3, rolldown 1.2.12, tsdown 0.23.0, vitest 5.0.3, oxlint 1.87.0, oxlint-tsgolint 7.0.2003, oxfmt 0.72.0                           | 2026-10-07 |
+| Oxc docs (oxlint/oxfmt)                             | `oxc-project/website` [`6852693`][oxc-commit]                                                                                             | 2026-10-07 |
+| Next.js docs                                        | `vercel/next.js` [`eeb353b`][next-commit]                                                                                                 | 2026-10-07 |
+| Expo docs                                           | `expo/expo` [`cb88164`][expo-commit]                                                                                                      | 2026-10-07 |
+| tsdown docs                                         | `rolldown/tsdown` `6cbfec7`                                                                                                               | 2026-10-06 |
 
 "**Experiment Ex**" means a command I ran on a throwaway clone of this repo in `/tmp` (see [Experiments](#experiments-run-on-throwaway-clones)). Nothing in this repo was modified except this file.
 
@@ -22,7 +22,7 @@ Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a versi
 - **`vp run` covers about half of this repo's `turbo.json`.** It has topological/`-r`/`-t`/pnpm-style `--filter` (including `pkg...` and `...pkg`), a concurrency limit, `--parallel`, local caching with automatic file-read tracking, and per-task `cache.env`/`untrackedEnv`/`input`/`output` ([run.md][vp-run-filter], [config/run.md][vp-cfg-run]). It has **no watch mode, no `--continue`, no `persistent`/`interactive`/`outputLogs` task fields, no global env lists and no TUI**. Its task schema rejects unknown fields ([user.rs L296–321][vt-user-task]). A failing task SIGKILLs every other running task ([cancellation.md L13–19][vt-cancel]).
 - **vp 1.1.0 has no remote cache.** Remote caching (HTTP endpoint, GitHub OIDC uploads) was merged into vite-task `main` after the rev that vp 1.1.0 compiles. It is unreleased and has open design issues ([vite-task CHANGELOG][vt-changelog], [compare 7d69d65…main][vt-compare], [#778][vt-778]/[#779][vt-779]/[#781][vt-781]). Today the documented CI path is an **experimental** `actions/cache` of `node_modules/.vite/task-cache` ([github-actions-cache.md L3–5][vp-gha-cache]).
 - **Tasks with dependencies or caching need a `vite.config.ts` in each package.** `package.json` scripts cannot declare `dependsOn` or cache settings, and each package's own `vite.config.*` is loaded for its tasks ([run.md L112][vp-run-taskdef], [lib.rs L284–316][vt-lib-load]). Cached tasks run in a **clean environment** ([cache.md L67–86][vp-cache-env]). `vp run` never sets `npm_lifecycle_event` (E7), which this repo's `env.ts` files read for `skipValidation`.
-- **Lint: Oxlint covers almost every rule this repo actually enables.** On `apps/nextjs`, 149 of the 155 ESLint rules that are active for a `.tsx` file have an active Oxlint counterpart (E1). The gaps are `@typescript-eslint/no-unnecessary-condition` and `prefer-optional-chain` (both Oxlint *nursery*), `no-octal`, and three React-Compiler `react-hooks/*` config rules. `eslint-plugin-turbo` can only run as an alpha JS plugin. Type-aware linting needs **TypeScript 7 tsconfig semantics**: on this repo, 8 of the 10 errors it reported match TS 6.0 default changes; the other 2 came from the migration removing `prettier` (E5).
+- **Lint: Oxlint covers almost every rule this repo actually enables.** On `apps/nextjs`, 149 of the 155 ESLint rules that are active for a `.tsx` file have an active Oxlint counterpart (E1). The gaps are `@typescript-eslint/no-unnecessary-condition` and `prefer-optional-chain` (both Oxlint _nursery_), `no-octal`, and three React-Compiler `react-hooks/*` config rules. `eslint-plugin-turbo` can only run as an alpha JS plugin. Type-aware linting needs **TypeScript 7 tsconfig semantics**: on this repo, 8 of the 10 errors it reported match TS 6.0 default changes; the other 2 came from the migration removing `prettier` (E5).
 - **Format: Oxfmt matches Prettier output on 126 of 131 files (E3), with two exceptions.** It cannot load Prettier plugins: `@ianvs/prettier-plugin-sort-imports`'s `importOrder` is not migrated and a hand-written `sortImports` still differs on 18 files. It also does not read the `"prettier"` field in `package.json`, which every package here uses ([unsupported-features.md L13–17][oxfmt-unsupported], E3). Tailwind class sorting migrates automatically.
 - **`vp migrate` handles part of this repo.** In E4 it rewrote Prettier to Oxfmt, aliased `vite` to `@voidzero-dev/vite-plus-core` through the catalog, and rewrote the TanStack Start scripts. It **skipped ESLint** ("no root config found"), **left Turborepo untouched**, and turned `prettier --write --list-different` into `vp fmt --check`. It deleted `.nvmrc` but did not update `tooling/github/setup/action.yml`, which reads it. Its appended devDependency then broke the `sherif` postinstall (E5).
 - **Per app:** Next.js and Expo keep their own bundlers (Turbopack/webpack, Metro), so only `vp run`/`vp lint`/`vp fmt` apply. TanStack Start is already a Vite app. `vp build` built it on Vite 8.3.3 (E5) even though its pinned plugins declare `vite` peers only up to `^7`. Internal packages are just-in-time TS with `tsc`-emitted `.d.ts`, and nothing in the docs suggests `vp pack` is meant for that.
@@ -34,6 +34,7 @@ Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a versi
 ## Current repo inventory (what needs an equivalent)
 
 **Turborepo**
+
 - Root scripts: `turbo run build|clean|typecheck|ui-add`, `turbo run lint|format --continue -- --cache --cache-location …`, `turbo watch dev --continue`, `turbo watch dev -F @acme/nextjs...`, and `turbo -F @acme/db push|studio` (`package.json:10-25`). `@turbo/gen` and `turbo` are devDependencies (`package.json:31,34`).
 - `turbo.json`:
   - `ui: "tui"` (`:3`)
@@ -55,6 +56,7 @@ Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a versi
 - Generator `turbo/generators/config.ts:11-94` (Plop `add`/`modify` actions, npm-registry fetch, then `pnpm i` + `prettier --write`) and three `.hbs` templates.
 
 **ESLint** (`tooling/eslint/*`, 9 per-package `eslint.config.ts`, run as `eslint --flag unstable_native_nodejs_ts_config`, e.g. `apps/nextjs/package.json:10`)
+
 - `base.ts`:
   - `includeIgnoreFile(.gitignore)` plus `**/*.config.*` ignore (`:41-42`)
   - `@eslint/js` recommended + typescript-eslint `recommended`, `recommendedTypeChecked`, `stylisticTypeChecked` (`:50-53`)
@@ -66,12 +68,14 @@ Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a versi
 - `eslint-plugin-jsx-a11y` is a dependency (`tooling/eslint/package.json:20`) but no config references it.
 
 **Prettier** (`tooling/prettier/index.js`)
+
 - Plugins `@ianvs/prettier-plugin-sort-imports` and `prettier-plugin-tailwindcss` (`:7-10`), `tailwindFunctions` (`:11`), regex `importOrder` (`:12-28`), and `.hbs` parser overrides (`:29-42`).
 - Every package loads the config via the `"prettier": "@acme/prettier-config"` field (e.g. `package.json:37`, `apps/nextjs/package.json:49`).
 - Per-package `prettier --check . --ignore-path ../../.gitignore [--ignore-path .prettierignore]`.
 - The `pnpm-workspace.yaml:45-47` hoists the two plugins.
 
 **Misc**
+
 - `dotenv -e ../../.env --` wrappers (`apps/nextjs/package.json:13`, `packages/db/package.json:29`, `packages/auth/package.json:16`).
 - `skipValidation: !!process.env.CI || process.env.npm_lifecycle_event === "lint"` (`apps/nextjs/src/env.ts:37-38`, `apps/tanstack-start/src/env.ts:34-35`, `packages/auth/env.ts:16-17`).
 - `pnpm dlx sherif@latest` in postinstall (`package.json:22-23`).
@@ -99,24 +103,28 @@ Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a versi
 ## 2. Monorepo task running vs Turborepo
 
 **Task definition and discovery**
+
 - `vp run <task>` runs a `package.json` script or a task from that package's `vite.config.ts` `run.tasks`. A name can come from one or the other, not both ([run.md L85–118][vp-run-taskdef]).
 - Each package's config is loaded from its own directory ([lib.rs L284–316][vt-lib-load]). There is no root-level pipeline that applies to every package the way `turbo.json` `tasks` does. A maintainer suggests composing a shared TS file into each `run` block ([vite-plus#1494 comment][vp-1494]). A dedicated `turbo.json`-style file is an open request there.
 - **Task fields:** `command`, `cwd`, `dependsOn` and `cache` (`env`, `untrackedEnv`, `input`, `output`). Workspace-root fields are `run.cache` and `run.enablePrePostScripts` ([config/run.md][vp-cfg-run]; [user.rs L241–268, L296–321, L390–413][vt-user-task]).
 - The structs use `deny_unknown_fields`, so `persistent`, `interactive`, `outputLogs` and `inputs` are config errors, not silently ignored ([user.rs L296][vt-user-task]).
 
 **Dependency graph**
+
 - `dependsOn: ['build', '@pkg#build']` for explicit edges.
 - `dependsOn: [{ task: 'build', from: 'dependencies' | ['dependencies','devDependencies'] }]` is the Turbo `^build` analogue. It covers **direct** workspace deps that define the task ([run.md L120–156][vp-run-deps]; [config/run.md L118–155][vp-cfg-run-deps]).
 - Known limit: the object form does not bridge a package that lacks the task ([vite-task#738][vt-738], open). Today every package that sits between this repo's apps and a package with `build` is also a direct dependency, so the chain holds. That is an inference from the `package.json` files.
 - `-r`/`-t`/`--filter` order comes from the `package.json` dependency graph ([run.md L158–193][vp-run-filter]).
 
 **Filtering**
+
 - pnpm syntax: name, glob, `./dir`, `pkg...` (with dependencies), `...pkg` (with dependents), `pkg^...`, `!pkg` (`vp run --help`; [run.md L195–221][vp-run-filter]).
 - A filter that matches nothing **warns and exits 0** unless `--fail-if-no-match` is passed ([run.md L221][vp-run-filter]).
 - Changed-since selectors (`[ref]`, Turbo `--affected`) are **not supported** ([vite-plus#2903][vp-2903], open, 2026-10-06).
 - `-w` selects the root package, the analogue of `//#task` ([run.md L223–229][vp-run-filter]).
 
 **Caching**
+
 - Local only in vp 1.1.0 (see Summary). The cache lives in `node_modules/.vite/task-cache` ([cache.md L103–111][vp-cache-env]).
 - `vite.config.ts` tasks are cached by default. `package.json` scripts are **not** cached unless you pass `--cache` or set `run.cache.scripts: true` ([cache.md L23–44][vp-cache-when]).
 - Inputs are tracked automatically: file reads, missing-file probes and directory listings. Outputs are auto-archived and restored ([automatic-data-tracking.md L9–50][vp-adt]).
@@ -130,6 +138,7 @@ Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a versi
 - **No cache eviction** by age or size yet ([vite-task#251][vt-251]; [github-actions-cache.md L159][vp-gha-cache-evict]).
 
 **`--continue`, watch, persistent and interactive tasks**
+
 - `--continue`: **none.** On a non-zero exit, `vp run` kills all other running tasks with SIGKILL and schedules nothing new ([cancellation.md L13–19][vt-cancel]). E6 showed the effect: after `@acme/nextjs#build` failed, the other in-flight builds exited 137.
 - Watch (`turbo watch`): **none.** `vp run --watch` is an open proposal, and a maintainer replied "this is planned" on 2026-04-03 ([vite-task#276][vt-276]). Turbo's watch reruns non-persistent tasks on change and leaves tools with their own watchers (e.g. `next dev`) running ([turbo watch docs][turbo-watch]).
 - Persistent/long-running tasks: no `persistent` flag ([vite-task#416][vt-416], open). The documented approach is `vp run -r --parallel dev`, which drops dependency ordering ([concurrency.md L30–38][vt-concurrency]). Without `--parallel`, the default limit of 4 applies ([concurrency.md L14][vt-concurrency]).
@@ -137,15 +146,18 @@ Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a versi
 - Interactive tasks: uncached tasks in the default `interleaved` log mode inherit stdin. Cached tasks and `labeled`/`grouped` modes get `/dev/null` ([stdio.md L69–82][vt-stdio]). The docs don't say which task gets stdin when several uncached tasks run at once.
 
 **Parallelism and output**
+
 - `--concurrency-limit N` (default 4) or `VP_RUN_CONCURRENCY_LIMIT`; `--parallel` ([run.md L339–365][vp-run-conc]).
 - `--log interleaved|labeled|grouped`. There is no TUI and no `outputLogs` equivalent; cache hits replay the stored output ([stdio.md L5–15][vt-stdio]).
 
 **Other behaviour**
+
 - Compound `a && b` commands and nested `vp run` are split into separately cached sub-tasks. A root script `vp run -r build` prunes its own recursion ([run.md L231–302][vp-run-compound]).
-- Running the **current** root script `turbo run build` under `vp run -r build` is *not* pruned. It ran as `create-t3-turbo#build` in E6.
+- Running the **current** root script `turbo run build` under `vp run -r build` is _not_ pruned. It ran as `create-t3-turbo#build` in E6.
 - Arguments after the task name go to every selected task, as with `turbo run lint -- --fix`. E8 confirmed this for `-r`. Tasks pulled in by `dependsOn` don't receive them ([vite-task CHANGELOG, #324][vt-changelog]).
 
 **Using `vp run` without migrating**
+
 - The global `vp` can run tasks in this repo without a local `vite-plus` install. It prints `warn: This project does not use vite-plus` (E6).
 
 ## 3. Lint (`vp lint` = Oxlint 1.87.0)
@@ -153,18 +165,18 @@ Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a versi
 - **Config model.** One root `vite.config.ts` `lint` block plus `lint.overrides` for package-specific rules. Nested configs do not apply per file ([lint.md L19–43][vp-lint]; [monorepo.md L7–66][vp-monorepo]; [troubleshooting.md L27–37][vp-trouble-nested], feedback thread [discussion #2669][vp-2669]). This repo's 9 per-package flat configs (base/react/next/restrictEnvAccess combinations) would become overrides keyed by path globs.
 - **Rule coverage (E1).** `@oxlint/migrate@1.87.0 --type-aware --details` on `apps/nextjs/eslint.config.ts` (the richest config) produced 164 rules (165 with JS plugins). I cross-checked against `eslint --print-config` on `src/app/page.tsx`: of 155 active ESLint rules, 6 have no active Oxlint counterpart.
 
-| Plugin / rule set | Oxlint status (E1 + rule docs) |
-| --- | --- |
-| `@eslint/js` recommended | Covered, except `no-octal`. The migrator notes "Superseded by strict mode", and no Oxlint rule page exists. |
+| Plugin / rule set                                                             | Oxlint status (E1 + rule docs)                                                                                                                                                                                                                                                                                                                |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@eslint/js` recommended                                                      | Covered, except `no-octal`. The migrator notes "Superseded by strict mode", and no Oxlint rule page exists.                                                                                                                                                                                                                                   |
 | typescript-eslint recommended + recommendedTypeChecked + stylisticTypeChecked | Covered as `typescript/*`, except `no-unnecessary-condition` and `prefer-optional-chain`. Both exist but are `category: "Nursery"` and type-aware ([rule doc][oxlint-nuc]). The repo configures `no-unnecessary-condition` explicitly (`base.ts:69-74`). Option objects for `no-misused-promises` and `consistent-type-imports` carried over. |
-| `import/consistent-type-specifier-style` | Covered ([rule][oxlint-import-cts]). |
-| `no-restricted-properties` / `no-restricted-imports` (restrictEnvAccess) | Covered, with options. E2 showed `no-restricted-properties` firing on `process.env`. |
-| `react-hooks` recommended-latest (18 rules) | 15 covered as `react/*` (e.g. `react/rules-of-hooks`, `react/purity`). `component-hook-factories`, `config` and `gating` are unsupported; the migrator gives reasons. |
-| `eslint-plugin-react` | No active rules today (see inventory), so there is nothing to port. |
-| `@next/eslint-plugin-next` | All 21 rules map to `nextjs/*`. |
-| `eslint-plugin-turbo` (`no-undeclared-env-vars`) | No native rule. `--js-plugins` emits `jsPlugins: ["eslint-plugin-turbo"]`. In E2 oxlint failed to load it from `apps/nextjs` because the dependency lives in `tooling/eslint` (pnpm strict layout). The rule checks against `turbo.json`, so it stops meaning anything once Turbo is gone (inference). |
-| `reportUnusedDisableDirectives` | Not migrated by the tool. Set it by hand with `options.reportUnusedDisableDirectives` (root config only) ([generated-config.md L372–381][oxlint-opts]). |
-| `.gitignore` ignore | Oxlint respects `.gitignore` by default ([ignore-files.md L13–23][oxlint-ignore]). The migrator also inlined it as `ignorePatterns`. |
+| `import/consistent-type-specifier-style`                                      | Covered ([rule][oxlint-import-cts]).                                                                                                                                                                                                                                                                                                          |
+| `no-restricted-properties` / `no-restricted-imports` (restrictEnvAccess)      | Covered, with options. E2 showed `no-restricted-properties` firing on `process.env`.                                                                                                                                                                                                                                                          |
+| `react-hooks` recommended-latest (18 rules)                                   | 15 covered as `react/*` (e.g. `react/rules-of-hooks`, `react/purity`). `component-hook-factories`, `config` and `gating` are unsupported; the migrator gives reasons.                                                                                                                                                                         |
+| `eslint-plugin-react`                                                         | No active rules today (see inventory), so there is nothing to port.                                                                                                                                                                                                                                                                           |
+| `@next/eslint-plugin-next`                                                    | All 21 rules map to `nextjs/*`.                                                                                                                                                                                                                                                                                                               |
+| `eslint-plugin-turbo` (`no-undeclared-env-vars`)                              | No native rule. `--js-plugins` emits `jsPlugins: ["eslint-plugin-turbo"]`. In E2 oxlint failed to load it from `apps/nextjs` because the dependency lives in `tooling/eslint` (pnpm strict layout). The rule checks against `turbo.json`, so it stops meaning anything once Turbo is gone (inference).                                        |
+| `reportUnusedDisableDirectives`                                               | Not migrated by the tool. Set it by hand with `options.reportUnusedDisableDirectives` (root config only) ([generated-config.md L372–381][oxlint-opts]).                                                                                                                                                                                       |
+| `.gitignore` ignore                                                           | Oxlint respects `.gitignore` by default ([ignore-files.md L13–23][oxlint-ignore]). The migrator also inlined it as `ignorePatterns`.                                                                                                                                                                                                          |
 
 - **Type-aware linting** comes from tsgolint on typescript-go: "TypeScript **7.0+** is required". Options deprecated in TS 6.0 or removed in 7.0 must be migrated first, and `baseUrl` is unsupported ([type-aware.md L260–275][oxlint-typeaware]). It covers 59 of 61 typescript-eslint type-aware rules ([type-aware.md L10][oxlint-typeaware]). `options.typeCheck` is labelled "experimental" ([generated-config.md L402–408][oxlint-opts]).
   - `vp migrate` turns on both `typeAware` and `typeCheck` ([check.md L9][vp-check]). In E5 that produced 10 errors here:
@@ -196,24 +208,28 @@ Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a versi
   - the 3 `.hbs` templates
 
   Every other file already matched Prettier output.
+
 - **CLI parity.** `--write` (default), `--check`, `--list-different` and repeatable `--ignore-path` exist ([formatter generated-cli.md L22–39][oxfmt-cli]). Neither the oxfmt nor the oxlint CLI documents a `--cache` flag, so the `--cache --cache-location .cache/.prettiercache|.eslintcache` arguments have no equivalent. Caching would come from `vp run` instead.
 - **Migration path.** `oxfmt --migrate=prettier` ([migrate-from-prettier.md L116][oxfmt-migrate]), or `vp migrate`. The latter writes a `fmt` block into the root `vite.config.ts`, rewrites `prettier` scripts to `vp fmt`, and removes `prettier` + `prettier-plugin-tailwindcss` (E4).
 
 ## 5. Per-app compatibility
 
 **Next.js (`next@^16.0.9`)**
+
 - Next 16 builds with Turbopack by default (`--webpack` opts out) ([version-16.mdx L102–154][next-16]). `next lint` was removed: "Use Biome or ESLint directly. `next build` no longer runs linting" ([version-16.mdx L1060–1062][next-16-lint]).
 - Next's docs list only ESLint and Biome as linters, not Oxlint ([installation.mdx L387–406][next-install]). They do document Vitest for unit tests, with the caveat that async Server Components are unsupported ([testing/vitest.mdx][next-vitest]).
 - `vp dev`/`vp build` always run Vite, so this app must use `vp run dev|build` ([run.md L41–54][vp-run-builtin]).
 - What applies: `vp run` (scripts unchanged), `vp lint` with the `nextjs` plugin (all 21 rules, E1), `vp fmt`, and `vp test` if tests are added. No Next.js app is in vite-plus's e2e ecosystem list; only `vinext` is ([e2e-test.yml][vp-e2e]).
 
 **Expo / Metro (SDK 54)**
+
 - Metro is configured automatically for monorepos since SDK 52 ([monorepos.mdx L9–26][expo-monorepo]).
 - Expo's docs cover ESLint via `eslint-config-expo` ([using-eslint.mdx L22][expo-eslint]) and unit tests via Jest/`jest-expo` ([unit-testing.mdx L2–23][expo-jest]). Neither page mentions Oxlint, Oxfmt, Vitest or Vite+ (grep of `docs/pages/guides`).
 - Vite+ can only run the scripts (`expo start`, `expo run:*`) and lint or format the sources.
 - `expo start`'s interactive keys depend on stdin inheritance (see §2). There is no Expo project in vite-plus e2e CI ([e2e-test.yml][vp-e2e]).
 
 **TanStack Start (`@tanstack/react-start@^1.135.2` + `nitro@3.0.1-alpha.1`)**
+
 - Already a Vite app (`apps/tanstack-start/vite.config.ts`).
 - `vp migrate` rewrites the config import to `vite-plus`, wraps the plugins in `lazyPlugins` (a feature for skipping plugin setup when only lint/fmt config is read; [troubleshooting.md L89–115][vp-trouble-lazy]), and rewrites `vite build` → `vp build` and `vite start` → `vp start` (E4).
   - `vp start` is not a `vp` command ([README CLI list][vp-readme-cli]).
@@ -221,18 +237,19 @@ Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a versi
 - The migration swaps Vite 7.1.12 for `@voidzero-dev/vite-plus-core@1.1.0`, which bundles Vite 8.3.3. It adds `peerDependencyRules.allowAny: [vite]` (E4).
 - Declared `vite` peer ranges (npm registry, 2026-10-07):
 
-| Package (version pinned here) | Declared `vite` peer |
-| --- | --- |
-| `@tanstack/react-start@1.135.2` | `>=7.0.0` |
-| `nitro@3.0.1-alpha.1` | `^7` |
-| `@vitejs/plugin-react@5.1.0` | `^4…^7` |
-| `@tailwindcss/vite@4.1.16` | `^5.2 \|\| ^6 \|\| ^7` |
+| Package (version pinned here)   | Declared `vite` peer   |
+| ------------------------------- | ---------------------- |
+| `@tanstack/react-start@1.135.2` | `>=7.0.0`              |
+| `nitro@3.0.1-alpha.1`           | `^7`                   |
+| `@vitejs/plugin-react@5.1.0`    | `^4…^7`                |
+| `@tailwindcss/vite@4.1.16`      | `^5.2 \|\| ^6 \|\| ^7` |
 
 - In E5, `vp build` **succeeded** and produced `.output/` via nitro. It warned that `optimizeDeps.rollupOptions` is deprecated in favour of `rolldownOptions`, and that `vite-tsconfig-paths` can be replaced by `resolve.tsconfigPaths`. Runtime and dev server were not tested.
 - vite-plus e2e CI runs `vp run test` and `vp run build` on a TanStack Start + nitro hello-world ([e2e-test.yml][vp-e2e]).
 - An earlier TanStack Start SSR breakage, caused by two copies of vite-plus-core, was fixed by PR #2617 ([vite-plus#1391][vp-1391]).
 
 **Internal packages**
+
 - `@acme/api`, `@acme/db` and `@acme/validators` export `src/*.ts` as `default` and `dist/*.d.ts` as `types`. Their `build`/`dev` script is `tsc` with `emitDeclarationOnly` (`packages/api/package.json:5-15`, `tooling/typescript/compiled-package.json:5-10`).
 - `@acme/auth` and `@acme/ui` are source-only, with no `build`.
 - Apps consume them as source: `transpilePackages` in `apps/nextjs/next.config.js:11-17`, and Vite and Metro natively.
@@ -246,7 +263,7 @@ Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a versi
   - Org-wide templates (`@org/create` with a `createConfig.templates` manifest) are also supported ([create.md L198–343][vp-create-gen]).
 - **sherif.** Independent of Vite+. It can stay as `pnpm dlx` or become `vp dlx`. After `vp migrate`, sherif failed `unordered-dependencies` on `apps/tanstack-start/package.json`, because migrate appended `vite-plus` after `vite-tsconfig-paths`. That made `pnpm install` exit 1 through postinstall (E5).
 - **dotenv-cli.** Untouched by `vp migrate` (E4). Vite+ docs only show `dotenv … -- bunx …` being preserved during rewrites ([migrate-rules.md L243–252][vp-mig-scripts]).
-  - For cached tasks, variables loaded by dotenv inside the task are unaffected by vp's env filtering. Variables coming from the *parent* shell, such as CI-provided `POSTGRES_URL`, are stripped unless listed (E7).
+  - For cached tasks, variables loaded by dotenv inside the task are unaffected by vp's env filtering. Variables coming from the _parent_ shell, such as CI-provided `POSTGRES_URL`, are stripped unless listed (E7).
   - Inference: the `.env` file read is tracked as an input by file-system tracking.
 - **`npm_lifecycle_event`.** Not set by `vp run` (E7). `vite-task` contains no reference to it. vp 1.1.0 newly sets `npm_execpath`/`npm_config_user_agent` ([v1.1.0 notes][vp-rel-110]). The three `env.ts` `skipValidation` checks for `=== "lint"` would no longer fire when lint runs through `vp run`. `CI` is still passed by default.
 - **`catalog:`.** `vp migrate` keeps `catalog:`/named catalogs and pins `vite-plus` plus the `vite` → `npm:@voidzero-dev/vite-plus-core@…` alias in the default catalog. Under pnpm it writes `overrides: vite@*: 'catalog:'` ([migrate-rules.md L97–134, L265–283][vp-mig-deps]; E4). `vp add` forwards pnpm's `--save-catalog`/`--save-catalog-name` ([vite-plus#1835 comment][vp-1835]).
@@ -277,29 +294,29 @@ Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a versi
 
 - **Action.** `voidzero-dev/setup-vp@<exact version>` installs `vp`, Node and the package manager, and runs `vp install`. `cache: true` caches package-manager data. Don't use the frozen `v1` tag ([ci.md L9–33][vp-ci]). Inputs include `node-version-file`, `run-install`, `cache`, `working-directory` and `sfw` ([setup-vp action.yml][setup-vp]).
 - **Replaces** `pnpm/action-setup` + `setup-node` + `pnpm add -g turbo` (`tooling/github/setup/action.yml:7-16`), per the documented before/after ([ci.md L124–156][vp-ci]).
-- **Task cache.** "Reusing Vite Task's cache across GitHub Actions runs is experimental." The pattern is to restore and save `node_modules/.vite/task-cache` *after* install, using a rolling `run_id`-based key with an OS/arch restore prefix. Only `vp run` tasks are cached, not direct `vp build`. Fork PRs may be restore-only, and nothing evicts old entries ([github-actions-cache.md][vp-gha-cache]).
+- **Task cache.** "Reusing Vite Task's cache across GitHub Actions runs is experimental." The pattern is to restore and save `node_modules/.vite/task-cache` _after_ install, using a rolling `run_id`-based key with an OS/arch restore prefix. Only `vp run` tasks are cached, not direct `vp build`. Fork PRs may be restore-only, and nothing evicts old entries ([github-actions-cache.md][vp-gha-cache]).
 - **Remote cache.** Vercel Remote Cache (`TURBO_TEAM`/`TURBO_TOKEN`) has no vp 1.1.0 equivalent. vite-task `main` adds `cache.remote.url`/`VP_REMOTE_CACHE_URL` with `--remote-cache=off|read|read-write` and GitHub Actions OIDC upload auth, all unreleased ([vite-task CHANGELOG][vt-changelog]).
 - **Updates.** Renovate's GitHub Actions manager picks up `setup-vp` with no extra rule ([ci.md L97–122][vp-ci]).
 
 ## 9. Known gaps and open issues relevant to this repo
 
-| Gap | Status / source |
-| --- | --- |
-| No `vp run --watch` (replaces `turbo watch dev`) | Open, "planned" ([vite-task#276][vt-276]) |
-| No `persistent` tasks / depending on a persistent task | Open ([vite-task#416][vt-416]) |
-| No `--continue`; fast-fail SIGKILLs siblings | Documented behaviour ([cancellation.md][vt-cancel]) |
-| No remote cache in a release | Unreleased on vite-task main; open design issues [#768][vt-768], [#778][vt-778], [#779][vt-779], [#781][vt-781] |
-| No cache eviction | Open ([vite-task#251][vt-251]) |
-| `dependsOn` object form can't bridge packages lacking the task | Open ([vite-task#738][vt-738]) |
-| No changed-since / `--affected` filters | Open ([vite-plus#2903][vp-2903]) |
-| No dedicated task-config file; tasks live per package in `vite.config.ts` | Open request ([vite-plus#1494][vp-1494]) |
-| `vp lint` via `vp run` failing with tsgolint `spawnSync EINVAL` (Docker repro) | Open ([vite-task#499][vt-499]) |
-| Run several different tasks in one graph (`run-many`) | Open RFC ([vite-task#388][vt-388]) |
-| Nested lint/fmt configs not applied per file | By design for now; feedback in [discussion #2669][vp-2669] |
-| `vp migrate` skips package-level ESLint; misses non-`.github` composite actions; check-vs-write script rewrite | Observed (E4); general tracker [vite-plus#2037][vp-2037] |
-| Oxfmt: no `package.json#prettier` field, no Prettier plugins, ianvs `importOrder` not translatable | [unsupported-features.md][oxfmt-unsupported]; E3 |
-| Type-aware lint needs TS 7 tsconfig semantics; JS plugins alpha; `typeCheck` experimental | [type-aware.md][oxlint-typeaware]; [js-plugins.md][oxlint-jsplugins]; E5 |
-| Renovate splits `vite-plus` / core-alias bumps | Open ([vite-plus#2356][vp-2356]) |
+| Gap                                                                                                            | Status / source                                                                                                 |
+| -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| No `vp run --watch` (replaces `turbo watch dev`)                                                               | Open, "planned" ([vite-task#276][vt-276])                                                                       |
+| No `persistent` tasks / depending on a persistent task                                                         | Open ([vite-task#416][vt-416])                                                                                  |
+| No `--continue`; fast-fail SIGKILLs siblings                                                                   | Documented behaviour ([cancellation.md][vt-cancel])                                                             |
+| No remote cache in a release                                                                                   | Unreleased on vite-task main; open design issues [#768][vt-768], [#778][vt-778], [#779][vt-779], [#781][vt-781] |
+| No cache eviction                                                                                              | Open ([vite-task#251][vt-251])                                                                                  |
+| `dependsOn` object form can't bridge packages lacking the task                                                 | Open ([vite-task#738][vt-738])                                                                                  |
+| No changed-since / `--affected` filters                                                                        | Open ([vite-plus#2903][vp-2903])                                                                                |
+| No dedicated task-config file; tasks live per package in `vite.config.ts`                                      | Open request ([vite-plus#1494][vp-1494])                                                                        |
+| `vp lint` via `vp run` failing with tsgolint `spawnSync EINVAL` (Docker repro)                                 | Open ([vite-task#499][vt-499])                                                                                  |
+| Run several different tasks in one graph (`run-many`)                                                          | Open RFC ([vite-task#388][vt-388])                                                                              |
+| Nested lint/fmt configs not applied per file                                                                   | By design for now; feedback in [discussion #2669][vp-2669]                                                      |
+| `vp migrate` skips package-level ESLint; misses non-`.github` composite actions; check-vs-write script rewrite | Observed (E4); general tracker [vite-plus#2037][vp-2037]                                                        |
+| Oxfmt: no `package.json#prettier` field, no Prettier plugins, ianvs `importOrder` not translatable             | [unsupported-features.md][oxfmt-unsupported]; E3                                                                |
+| Type-aware lint needs TS 7 tsconfig semantics; JS plugins alpha; `typeCheck` experimental                      | [type-aware.md][oxlint-typeaware]; [js-plugins.md][oxlint-jsplugins]; E5                                        |
+| Renovate splits `vite-plus` / core-alias bumps                                                                 | Open ([vite-plus#2356][vp-2356])                                                                                |
 
 ---
 
@@ -307,38 +324,38 @@ Researched 2026-10-07. Vite+ releases often, so every claim is pinned to a versi
 
 Confidence: **High** = documented and confirmed by an experiment here. **Med** = documented, not exercised on this repo. **Low** = inference, workaround, or no equivalent.
 
-| Current usage (file:line) | Vite+ equivalent | Confidence | Source |
-| --- | --- | --- | --- |
-| `"build": "turbo run build"` (`package.json:10`) | `"build": "vp run -r build"`; self-recursion is pruned. Packages need `vite.config.ts` tasks for `^build` ordering and caching. | High | [run.md L175–183, L288–302][vp-run-compound]; E6 |
-| `"clean:workspaces": "turbo run clean"` (`package.json:12`) + `//#clean` (`turbo.json:32-34`) | `vp run -r clean` (root `clean` is included in `-r`); `vp run -w clean` for the root only. Scripts are uncached by default. | Med | [run.md L175–229][vp-run-filter]; E6 (root included in `-r`) |
-| `"db:push": "turbo -F @acme/db push"` (`package.json:14`), `push` `interactive` (`turbo.json:35-38`) | `vp run @acme/db#push`; uncached and `interleaved`, so stdin is inherited | Med | [run.md L167–171][vp-run-filter]; [stdio.md L69–82][vt-stdio] |
-| `"db:studio"` (`package.json:15`), `studio` `persistent` (`turbo.json:39-42`) | `vp run @acme/db#studio`; no `persistent` flag, not needed for a single task | Med | [user.rs][vt-user-task]; [vite-task#416][vt-416] |
-| `"dev": "turbo watch dev --continue"` (`package.json:16`) | **No watch, no `--continue`.** Closest: `vp run -r dev` (ordered, limit 4) or `vp run -r --parallel dev` (unordered). Package `dev` = `tsc` would not re-run on change. | Low | [vite-task#276][vt-276]; [concurrency.md][vt-concurrency]; [cancellation.md][vt-cancel] |
-| `"dev:next": "turbo watch dev -F @acme/nextjs..."` (`package.json:17`) | `vp run --filter "@acme/nextjs..." dev` (no watch) | Med (filter High) | [run.md L195–221][vp-run-filter]; E8 |
-| `format`/`format:fix` with `--continue -- --cache --cache-location …` (`package.json:18-19`) | `vp fmt --check` / `vp fmt` once at the root, or `vp run -r format`. No `--continue`. No oxfmt cache flag; use the `vp run` task cache instead. | Med | [fmt.md][vp-fmt]; [oxfmt CLI][oxfmt-cli]; E5 |
-| `lint`/`lint:fix` with `--continue -- --cache --cache-location …` (`package.json:20-21`) | `vp lint` / `vp lint --fix` once at the root with `lint.overrides`, or per-package tasks. Args after the task name reach every `-r` task. | Med | [lint.md][vp-lint]; [monorepo.md][vp-monorepo]; E8 |
-| `lint:ws` / `postinstall` sherif (`package.json:22-23`) | Unchanged (`pnpm dlx`) or `vp dlx sherif@latest`. Watch for unsorted deps after migrate. | High (E5) | [README CLI][vp-readme-cli]; E5 |
-| `"typecheck": "turbo run typecheck"` (`package.json:24`) | `vp run -r typecheck` with per-package tasks (`dependsOn` build, tsbuildinfo input exclusion), **or** `vp check` with `typeAware`+`typeCheck` (TS 7 semantics; 8 TS-6.0-default errors today) | Med | [config/run.md L245–265][vp-cfg-run-input]; [check.md][vp-check]; E5, E6 |
-| `"ui-add": "turbo run ui-add"` (`package.json:25`), `interactive` (`turbo.json:43-46`) | `vp run @acme/ui#ui-add` (uncached, so stdin is inherited) | Med | [stdio.md][vt-stdio] |
-| `@turbo/gen` + `turbo/generators/*` (`package.json:31`) | `vp create vite:generator` (Bingo) + `create.templates`; templates must be rewritten | Low | [create.md L108–196][vp-create-gen] |
-| `turbo` devDep (`package.json:34`); `pnpm add -g turbo` (`tooling/github/setup/action.yml:13`) | `vite-plus` devDep (catalog) + `setup-vp` action | High | [migrate-rules.md][vp-mig-deps]; [ci.md][vp-ci]; E4 |
-| `"ui": "tui"` (`turbo.json:3`) | No TUI; `--log interleaved\|labeled\|grouped` | High (absent from `vp run --help`) | [stdio.md L5–15][vt-stdio] |
-| `topo` + `dependsOn: ["^topo"]` (`turbo.json:5-7,22,26`) | No equivalent concept. Automatic input tracking fingerprints files a task reads, possibly including dependency sources (unverified). | Low | [automatic-data-tracking.md][vp-adt] |
-| `build`: `dependsOn ["^build"]`, `outputs [".cache/tsbuildinfo.json","dist/**"]` (`turbo.json:8-11`) | Per package: `run.tasks.build = { command: 'tsc', dependsOn: [{ task: 'build', from: 'dependencies' }], cache: { input: [{auto:true}, '!.cache/tsbuildinfo.json'] } }`. Outputs are auto-tracked or set with `cache.output`. | High (mechanism) / Med (exact config untested) | [config/run.md][vp-cfg-run]; E6 |
-| `dev`: `^dev`, `cache:false`, `persistent:false` (`turbo.json:12-16`) | Scripts are uncached by default (or task `cache:false`); `dependsOn` object form for `^dev` | Med | [cache.md L23–44][vp-cache-when] |
-| `format` `outputs` + `outputLogs: "new-only"` (`turbo.json:17-20`) | No `outputLogs`; cache hits replay full logs | High (schema) | [user.rs][vt-user-task] |
-| `lint`: `^topo`,`^build`, outputs `.eslintcache` (`turbo.json:21-24`) | Task `dependsOn: [{task:'build', from:'dependencies'}]`; cache via task fingerprint | Med | [config/run.md][vp-cfg-run-deps] |
-| `typecheck`: `^topo`,`^build`, outputs tsbuildinfo (`turbo.json:25-28`) | As `build`; tsbuildinfo must be excluded from inputs or the task never caches | High | E6; [config/run.md L260][vp-cfg-run-input] |
-| `clean` `cache:false` (`turbo.json:29-31`) | Default for scripts | High | [cache.md][vp-cache-when] |
-| `globalEnv` (`turbo.json:48-55`) | **No global list.** Per-task `cache.env`. Cached tasks don't see undeclared vars (POSTGRES_URL stripped in E7). | High | [config/run.md L189–214][vp-cfg-run-env]; E7 |
-| `globalPassThroughEnv` (`turbo.json:56-63`) | Per-task `cache.untrackedEnv`. Defaults cover `CI`, `VERCEL`, `VERCEL_*` but not `NODE_ENV`; `npm_lifecycle_event` is never set by `vp run`. | High | [DEFAULT_UNTRACKED_ENV][vt-default-env]; E7 |
-| Package `turbo.json` `extends: ["//"]` (`apps/*/turbo.json:3`) | Per-package `vite.config.ts` `run.tasks`; share via JS import | Med | [lib.rs L284–316][vt-lib-load]; [vite-plus#1494][vp-1494] |
-| nextjs build `outputs: [".next/**","!.next/cache/**","next-env.d.ts"]` (`apps/nextjs/turbo.json:5-8`) | `cache.output: ['.next/**','!.next/cache/**','next-env.d.ts']`, or auto write tracking. Cache correctness for `next build` is untested. | Low | [config/run.md L317–381][vp-cfg-run] |
-| tanstack build `outputs: [".nitro/**",".output/**",".tanstack/**"]` (`apps/tanstack-start/turbo.json:5-8`) | `vp build` reports `dist/**`-style outputs itself; nitro's `.output` is not documented as covered, so list it in `cache.output` | Low | [automatic-data-tracking.md L108–138][vp-adt-coop] |
-| `dev` `persistent` (nextjs, tanstack) / `persistent`+`interactive` (expo) (`apps/*/turbo.json`) | No flags; `--parallel` for servers; stdin inheritance only for uncached interleaved tasks | Low | [concurrency.md][vt-concurrency]; [stdio.md][vt-stdio] |
-| CI `TURBO_TEAM`/`TURBO_TOKEN` remote cache (`.github/workflows/ci.yml:14-19`) | **None in vp 1.1.0**; experimental `actions/cache` of `node_modules/.vite/task-cache` | High | [github-actions-cache.md][vp-gha-cache]; [vt compare][vt-compare] |
-| CI jobs `pnpm lint && pnpm lint:ws`, `pnpm format`, `pnpm typecheck` (`ci.yml:35,46,57`) | `vp check` (fmt + lint + type check) or `vp run …` per job after `setup-vp` | Med | [ci.md L15–29][vp-ci]; [check.md][vp-check] |
-| `eslint-plugin-turbo` (`tooling/eslint/base.ts:5,47,56`) | Drop (Turbo removed). Alpha JS plugin is possible but pointless without `turbo.json`. | Low | E1/E2; [js-plugins.md][oxlint-jsplugins] |
+| Current usage (file:line)                                                                                  | Vite+ equivalent                                                                                                                                                                                                             | Confidence                                     | Source                                                                                  |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `"build": "turbo run build"` (`package.json:10`)                                                           | `"build": "vp run -r build"`; self-recursion is pruned. Packages need `vite.config.ts` tasks for `^build` ordering and caching.                                                                                              | High                                           | [run.md L175–183, L288–302][vp-run-compound]; E6                                        |
+| `"clean:workspaces": "turbo run clean"` (`package.json:12`) + `//#clean` (`turbo.json:32-34`)              | `vp run -r clean` (root `clean` is included in `-r`); `vp run -w clean` for the root only. Scripts are uncached by default.                                                                                                  | Med                                            | [run.md L175–229][vp-run-filter]; E6 (root included in `-r`)                            |
+| `"db:push": "turbo -F @acme/db push"` (`package.json:14`), `push` `interactive` (`turbo.json:35-38`)       | `vp run @acme/db#push`; uncached and `interleaved`, so stdin is inherited                                                                                                                                                    | Med                                            | [run.md L167–171][vp-run-filter]; [stdio.md L69–82][vt-stdio]                           |
+| `"db:studio"` (`package.json:15`), `studio` `persistent` (`turbo.json:39-42`)                              | `vp run @acme/db#studio`; no `persistent` flag, not needed for a single task                                                                                                                                                 | Med                                            | [user.rs][vt-user-task]; [vite-task#416][vt-416]                                        |
+| `"dev": "turbo watch dev --continue"` (`package.json:16`)                                                  | **No watch, no `--continue`.** Closest: `vp run -r dev` (ordered, limit 4) or `vp run -r --parallel dev` (unordered). Package `dev` = `tsc` would not re-run on change.                                                      | Low                                            | [vite-task#276][vt-276]; [concurrency.md][vt-concurrency]; [cancellation.md][vt-cancel] |
+| `"dev:next": "turbo watch dev -F @acme/nextjs..."` (`package.json:17`)                                     | `vp run --filter "@acme/nextjs..." dev` (no watch)                                                                                                                                                                           | Med (filter High)                              | [run.md L195–221][vp-run-filter]; E8                                                    |
+| `format`/`format:fix` with `--continue -- --cache --cache-location …` (`package.json:18-19`)               | `vp fmt --check` / `vp fmt` once at the root, or `vp run -r format`. No `--continue`. No oxfmt cache flag; use the `vp run` task cache instead.                                                                              | Med                                            | [fmt.md][vp-fmt]; [oxfmt CLI][oxfmt-cli]; E5                                            |
+| `lint`/`lint:fix` with `--continue -- --cache --cache-location …` (`package.json:20-21`)                   | `vp lint` / `vp lint --fix` once at the root with `lint.overrides`, or per-package tasks. Args after the task name reach every `-r` task.                                                                                    | Med                                            | [lint.md][vp-lint]; [monorepo.md][vp-monorepo]; E8                                      |
+| `lint:ws` / `postinstall` sherif (`package.json:22-23`)                                                    | Unchanged (`pnpm dlx`) or `vp dlx sherif@latest`. Watch for unsorted deps after migrate.                                                                                                                                     | High (E5)                                      | [README CLI][vp-readme-cli]; E5                                                         |
+| `"typecheck": "turbo run typecheck"` (`package.json:24`)                                                   | `vp run -r typecheck` with per-package tasks (`dependsOn` build, tsbuildinfo input exclusion), **or** `vp check` with `typeAware`+`typeCheck` (TS 7 semantics; 8 TS-6.0-default errors today)                                | Med                                            | [config/run.md L245–265][vp-cfg-run-input]; [check.md][vp-check]; E5, E6                |
+| `"ui-add": "turbo run ui-add"` (`package.json:25`), `interactive` (`turbo.json:43-46`)                     | `vp run @acme/ui#ui-add` (uncached, so stdin is inherited)                                                                                                                                                                   | Med                                            | [stdio.md][vt-stdio]                                                                    |
+| `@turbo/gen` + `turbo/generators/*` (`package.json:31`)                                                    | `vp create vite:generator` (Bingo) + `create.templates`; templates must be rewritten                                                                                                                                         | Low                                            | [create.md L108–196][vp-create-gen]                                                     |
+| `turbo` devDep (`package.json:34`); `pnpm add -g turbo` (`tooling/github/setup/action.yml:13`)             | `vite-plus` devDep (catalog) + `setup-vp` action                                                                                                                                                                             | High                                           | [migrate-rules.md][vp-mig-deps]; [ci.md][vp-ci]; E4                                     |
+| `"ui": "tui"` (`turbo.json:3`)                                                                             | No TUI; `--log interleaved\|labeled\|grouped`                                                                                                                                                                                | High (absent from `vp run --help`)             | [stdio.md L5–15][vt-stdio]                                                              |
+| `topo` + `dependsOn: ["^topo"]` (`turbo.json:5-7,22,26`)                                                   | No equivalent concept. Automatic input tracking fingerprints files a task reads, possibly including dependency sources (unverified).                                                                                         | Low                                            | [automatic-data-tracking.md][vp-adt]                                                    |
+| `build`: `dependsOn ["^build"]`, `outputs [".cache/tsbuildinfo.json","dist/**"]` (`turbo.json:8-11`)       | Per package: `run.tasks.build = { command: 'tsc', dependsOn: [{ task: 'build', from: 'dependencies' }], cache: { input: [{auto:true}, '!.cache/tsbuildinfo.json'] } }`. Outputs are auto-tracked or set with `cache.output`. | High (mechanism) / Med (exact config untested) | [config/run.md][vp-cfg-run]; E6                                                         |
+| `dev`: `^dev`, `cache:false`, `persistent:false` (`turbo.json:12-16`)                                      | Scripts are uncached by default (or task `cache:false`); `dependsOn` object form for `^dev`                                                                                                                                  | Med                                            | [cache.md L23–44][vp-cache-when]                                                        |
+| `format` `outputs` + `outputLogs: "new-only"` (`turbo.json:17-20`)                                         | No `outputLogs`; cache hits replay full logs                                                                                                                                                                                 | High (schema)                                  | [user.rs][vt-user-task]                                                                 |
+| `lint`: `^topo`,`^build`, outputs `.eslintcache` (`turbo.json:21-24`)                                      | Task `dependsOn: [{task:'build', from:'dependencies'}]`; cache via task fingerprint                                                                                                                                          | Med                                            | [config/run.md][vp-cfg-run-deps]                                                        |
+| `typecheck`: `^topo`,`^build`, outputs tsbuildinfo (`turbo.json:25-28`)                                    | As `build`; tsbuildinfo must be excluded from inputs or the task never caches                                                                                                                                                | High                                           | E6; [config/run.md L260][vp-cfg-run-input]                                              |
+| `clean` `cache:false` (`turbo.json:29-31`)                                                                 | Default for scripts                                                                                                                                                                                                          | High                                           | [cache.md][vp-cache-when]                                                               |
+| `globalEnv` (`turbo.json:48-55`)                                                                           | **No global list.** Per-task `cache.env`. Cached tasks don't see undeclared vars (POSTGRES_URL stripped in E7).                                                                                                              | High                                           | [config/run.md L189–214][vp-cfg-run-env]; E7                                            |
+| `globalPassThroughEnv` (`turbo.json:56-63`)                                                                | Per-task `cache.untrackedEnv`. Defaults cover `CI`, `VERCEL`, `VERCEL_*` but not `NODE_ENV`; `npm_lifecycle_event` is never set by `vp run`.                                                                                 | High                                           | [DEFAULT_UNTRACKED_ENV][vt-default-env]; E7                                             |
+| Package `turbo.json` `extends: ["//"]` (`apps/*/turbo.json:3`)                                             | Per-package `vite.config.ts` `run.tasks`; share via JS import                                                                                                                                                                | Med                                            | [lib.rs L284–316][vt-lib-load]; [vite-plus#1494][vp-1494]                               |
+| nextjs build `outputs: [".next/**","!.next/cache/**","next-env.d.ts"]` (`apps/nextjs/turbo.json:5-8`)      | `cache.output: ['.next/**','!.next/cache/**','next-env.d.ts']`, or auto write tracking. Cache correctness for `next build` is untested.                                                                                      | Low                                            | [config/run.md L317–381][vp-cfg-run]                                                    |
+| tanstack build `outputs: [".nitro/**",".output/**",".tanstack/**"]` (`apps/tanstack-start/turbo.json:5-8`) | `vp build` reports `dist/**`-style outputs itself; nitro's `.output` is not documented as covered, so list it in `cache.output`                                                                                              | Low                                            | [automatic-data-tracking.md L108–138][vp-adt-coop]                                      |
+| `dev` `persistent` (nextjs, tanstack) / `persistent`+`interactive` (expo) (`apps/*/turbo.json`)            | No flags; `--parallel` for servers; stdin inheritance only for uncached interleaved tasks                                                                                                                                    | Low                                            | [concurrency.md][vt-concurrency]; [stdio.md][vt-stdio]                                  |
+| CI `TURBO_TEAM`/`TURBO_TOKEN` remote cache (`.github/workflows/ci.yml:14-19`)                              | **None in vp 1.1.0**; experimental `actions/cache` of `node_modules/.vite/task-cache`                                                                                                                                        | High                                           | [github-actions-cache.md][vp-gha-cache]; [vt compare][vt-compare]                       |
+| CI jobs `pnpm lint && pnpm lint:ws`, `pnpm format`, `pnpm typecheck` (`ci.yml:35,46,57`)                   | `vp check` (fmt + lint + type check) or `vp run …` per job after `setup-vp`                                                                                                                                                  | Med                                            | [ci.md L15–29][vp-ci]; [check.md][vp-check]                                             |
+| `eslint-plugin-turbo` (`tooling/eslint/base.ts:5,47,56`)                                                   | Drop (Turbo removed). Alpha JS plugin is possible but pointless without `turbo.json`.                                                                                                                                        | Low                                            | E1/E2; [js-plugins.md][oxlint-jsplugins]                                                |
 
 ---
 
@@ -357,11 +374,11 @@ All runs were on clones of this repo at `8f945b7` in `/tmp/vpresearch/work`, usi
 - **E6** On a fresh clone, global `vp run -r --cache build`: the three `tsc` builds were "Not cached: read and wrote … tsbuildinfo.json". `@acme/nextjs#build` failed env validation. The same failure occurs with plain `pnpm -F @acme/nextjs build` because `.env.example` has empty `AUTH_DISCORD_*`, so it is not vp-specific. The root `turbo run build` and the tanstack build were then killed (exit 137).
 - **E7** A probe script printing `npm_lifecycle_event`, `POSTGRES_URL` and `CI`:
 
-  | Runner | `npm_lifecycle_event` | `POSTGRES_URL` |
-  | --- | --- | --- |
-  | `vp run` (uncached) | `null` | set |
-  | `vp run --cache` | `null` | unset |
-  | `pnpm` | `"probe"` | set |
+  | Runner              | `npm_lifecycle_event` | `POSTGRES_URL` |
+  | ------------------- | --------------------- | -------------- |
+  | `vp run` (uncached) | `null`                | set            |
+  | `vp run --cache`    | `null`                | unset          |
+  | `pnpm`              | `"probe"`             | set            |
 
 - **E8** `vp run -r argprobe --fix --cache-location x`: both packages received `--fix --cache-location x`. `--filter "@acme/nextjs..."` selected the workspace dependencies of `@acme/nextjs`.
 
@@ -386,6 +403,7 @@ All runs were on clones of this repo at `8f945b7` in `/tmp/vpresearch/work`, usi
 ---
 
 <!-- Reference links -->
+
 [vp-commit]: https://github.com/voidzero-dev/vite-plus/tree/b5efee3f3177de49610b941139f05a06819bb4f7
 [vt-commit]: https://github.com/voidzero-dev/vite-task/tree/7d69d6577ecf6bd83deee32186de59918a712873
 [oxc-commit]: https://github.com/oxc-project/website/tree/68526937f70fd8a6a4a18515bfdfca8575da0464

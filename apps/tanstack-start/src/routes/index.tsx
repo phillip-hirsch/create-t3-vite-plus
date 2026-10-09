@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { useForm } from "@tanstack/react-form";
 import {
   useMutation,
@@ -6,6 +5,7 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { Suspense } from "react";
 
 import type { RouterOutputs } from "@acme/api";
 import { CreatePostSchema } from "@acme/db/schema";
@@ -37,7 +37,7 @@ function RouteComponent() {
     <main className="container h-screen py-16">
       <div className="flex flex-col items-center justify-center gap-4">
         <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-          Create <span className="text-primary">T3</span> Turbo
+          Create <span className="text-primary">T3</span> Vite+
         </h1>
         <AuthShowcase />
 
@@ -100,9 +100,8 @@ function CreatePostForm() {
       }}
     >
       <FieldGroup>
-        <form.Field
-          name="title"
-          children={(field) => {
+        <form.Field name="title">
+          {(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
@@ -123,10 +122,9 @@ function CreatePostForm() {
               </Field>
             );
           }}
-        />
-        <form.Field
-          name="content"
-          children={(field) => {
+        </form.Field>
+        <form.Field name="content">
+          {(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
@@ -147,7 +145,7 @@ function CreatePostForm() {
               </Field>
             );
           }}
-        />
+        </form.Field>
       </FieldGroup>
       <Button type="submit">Create</Button>
     </form>
@@ -200,15 +198,15 @@ function PostCard(props: { post: RouterOutputs["post"]["all"][number] }) {
   );
 
   return (
-    <div className="bg-muted flex flex-row rounded-lg p-4">
+    <div className="flex flex-row rounded-lg bg-muted p-4">
       <div className="grow">
-        <h2 className="text-primary text-2xl font-bold">{props.post.title}</h2>
+        <h2 className="text-2xl font-bold text-primary">{props.post.title}</h2>
         <p className="mt-2 text-sm">{props.post.content}</p>
       </div>
       <div>
         <Button
           variant="ghost"
-          className="text-primary cursor-pointer text-sm font-bold uppercase hover:bg-transparent hover:text-white"
+          className="cursor-pointer text-sm font-bold text-primary uppercase hover:bg-transparent hover:text-white"
           onClick={() => deletePost.mutate(props.post.id)}
         >
           Delete
@@ -221,11 +219,11 @@ function PostCard(props: { post: RouterOutputs["post"]["all"][number] }) {
 function PostCardSkeleton(props: { pulse?: boolean }) {
   const { pulse = true } = props;
   return (
-    <div className="bg-muted flex flex-row rounded-lg p-4">
+    <div className="flex flex-row rounded-lg bg-muted p-4">
       <div className="grow">
         <h2
           className={cn(
-            "bg-primary w-1/4 rounded-sm text-2xl font-bold",
+            "w-1/4 rounded-sm bg-primary text-2xl font-bold",
             pulse && "animate-pulse",
           )}
         >

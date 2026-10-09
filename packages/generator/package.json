@@ -1,0 +1,22 @@
+{
+  "name": "@acme/generator",
+  "private": true,
+  "type": "module",
+  "bin": "./bin/index.ts",
+  "license": "MIT",
+  "scripts": {
+    "clean": "git clean -xdf .cache node_modules"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "bingo": "^0.9.3",
+    "yaml": "^2.8.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@acme/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

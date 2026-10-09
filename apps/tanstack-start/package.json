@@ -4,13 +4,9 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "pnpm with-env vite dev",
-    "build": "vite build",
-    "start": "vite start",
-    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore",
-    "lint": "eslint --flag unstable_native_nodejs_ts_config",
-    "typecheck": "tsc --noEmit",
-    "with-env": "dotenv -e ../../.env --"
+    "clean": "git clean -xdf .cache .nitro .output .tanstack node_modules",
+    "dev": "dotenv -e ../../.env -- vp dev",
+    "start": "node .output/server/index.mjs"
   },
   "dependencies": {
     "@acme/api": "workspace:*",
@@ -30,15 +26,13 @@
     "@trpc/server": "catalog:",
     "@trpc/tanstack-react-query": "catalog:",
     "better-auth": "catalog:",
-    "nitro": "3.0.1-alpha.1",
+    "nitro": "3.0.260903-beta",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "superjson": "2.2.3",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:*",
-    "@acme/prettier-config": "workspace:*",
     "@acme/tailwind-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@tailwindcss/vite": "catalog:",
@@ -46,12 +40,9 @@
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "catalog:",
-    "eslint": "catalog:",
-    "prettier": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "vite-tsconfig-paths": "^5.1.4"
-  },
-  "prettier": "@acme/prettier-config"
+    "vite-plus": "catalog:"
+  }
 }
