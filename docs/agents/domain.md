@@ -15,7 +15,8 @@ If any of these files don't exist, **proceed silently**. Don't flag their absenc
 /
 ├── GLOSSARY.md
 ├── docs/adr/
-│   └── 0001-vite-plus-replaces-turborepo.md
+│   ├── 0001-vite-plus-replaces-turborepo.md
+│   └── 0002-cloudflare-workers-and-d1.md
 ├── apps/
 ├── packages/
 └── tooling/

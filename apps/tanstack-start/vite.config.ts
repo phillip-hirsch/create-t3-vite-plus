@@ -41,8 +41,7 @@ export default defineConfig({
       build: {
         command: "vp build",
         // Cached tasks get a clean environment, so pass through (and
-        // fingerprint) the variables the app's env schema and Nitro read, including
-        // the Vercel provider variables Nitro uses to pick a deploy preset.
+        // fingerprint) the variables the app's env schema and Nitro read.
         cache: {
           // Nitro reads its previous output before overwriting it.
           input: [{ auto: true }, "!.nitro/**", "!.output/**"],
@@ -50,13 +49,11 @@ export default defineConfig({
             "SKIP_ENV_VALIDATION",
             "POSTGRES_URL",
             "AUTH_*",
+            "WEB_APP_ORIGIN",
             "NODE_ENV",
             "PORT",
             "NITRO_PRESET",
             "SERVER_PRESET",
-            "VERCEL",
-            "VERCEL_*",
-            "NOW_BUILDER",
             "GITHUB_ACTIONS",
             "NITRO_COMPATIBILITY_DATE",
             "SERVER_COMPATIBILITY_DATE",

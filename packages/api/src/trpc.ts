@@ -47,6 +47,8 @@ export const createTRPCContext = async (opts: {
  * transformer
  */
 const t = initTRPC.context<typeof createTRPCContext>().create({
+  // tRPC's own check reads process.env at runtime, which Vite doesn't inline.
+  isDev: process.env.NODE_ENV !== "production",
   transformer: superjson,
   errorFormatter: ({ shape, error }) => ({
     ...shape,
