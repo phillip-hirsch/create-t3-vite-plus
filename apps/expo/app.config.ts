@@ -12,7 +12,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   updates: {
     fallbackToCacheTimeout: 0,
   },
-  newArchEnabled: true,
   assetBundlePatterns: ["**/*"],
   ios: {
     bundleIdentifier: "your.bundle.identifier",
@@ -28,7 +27,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: "./assets/icon-light.png",
       backgroundColor: "#1F104A",
     },
-    edgeToEdgeEnabled: true,
   },
   // extra: {
   //   eas: {
@@ -38,10 +36,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   experiments: {
     tsconfigPaths: true,
     typedRoutes: true,
-    reactCanary: true,
     reactCompiler: true,
   },
   plugins: [
+    // Xcode 27 builds need the UIKit scene lifecycle. Remove on SDK 58+.
+    ["expo-build-properties", { ios: { enableSceneSupport: true } }],
     "expo-router",
     "expo-secure-store",
     "expo-web-browser",
