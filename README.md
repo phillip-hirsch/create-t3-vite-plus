@@ -139,7 +139,7 @@ In order to get Better-Auth to work with Expo, you must either:
 
 #### Deploy the Auth Proxy (RECOMMENDED)
 
-Better Auth comes with an [auth proxy plugin](https://www.better-auth.com/docs/plugins/oauth-proxy). Deploy the web app in `apps/tanstack-start` and set `AUTH_REDIRECT_PROXY_URL` to its production origin, such as `https://your-web-app.example.com`, in your local and deployed environments. On Vercel, it defaults to `https://$VERCEL_PROJECT_PRODUCTION_URL`. Without either setting, it uses the current web app URL for local development.
+Better Auth comes with an [auth proxy plugin](https://www.better-auth.com/docs/plugins/oauth-proxy). Deploy the web app in `apps/tanstack-start` and set `WEB_APP_ORIGIN` to its production origin, such as `https://your-web-app.example.com`, in your local and deployed environments. It's required in production. Without it, local development uses the current web app URL.
 
 The auth package uses this URL for both the OAuth proxy and the Discord callback. Register `<production-origin>/api/auth/callback/discord` with Discord. The mobile app's sign-in uses the deployed web app to complete the OAuth flow.
 
@@ -190,7 +190,7 @@ If you need to share runtime code between the client and server, such as input v
 Deploy `apps/tanstack-start` before using the mobile app in production. It serves both the tRPC API and the auth routes.
 
 1. Configure `POSTGRES_URL`, `AUTH_SECRET`, `AUTH_DISCORD_ID`, and `AUTH_DISCORD_SECRET` in your deployment environment.
-2. Set `AUTH_REDIRECT_PROXY_URL` to the deployed web app's origin. It's required for the build outside Vercel; on Vercel it defaults to `VERCEL_PROJECT_PRODUCTION_URL`. Register the Discord callback described above.
+2. Set `WEB_APP_ORIGIN` to the deployed web app's origin. It's required in production. Register the Discord callback described above.
 3. Build with `vp run build`. The default Nitro output runs with `node apps/tanstack-start/.output/server/index.mjs`.
 4. Point the mobile app's [`getBaseUrl`](./apps/expo/src/utils/base-url.ts) at the same deployed web app.
 
