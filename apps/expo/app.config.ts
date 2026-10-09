@@ -39,6 +39,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     reactCompiler: true,
   },
   plugins: [
+    // Xcode 27 builds need the UIKit scene lifecycle. Remove on SDK 58+.
+    ["expo-build-properties", { ios: { enableSceneSupport: true } }],
     "expo-router",
     "expo-secure-store",
     "expo-web-browser",
