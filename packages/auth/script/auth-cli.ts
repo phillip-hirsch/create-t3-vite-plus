@@ -5,7 +5,7 @@
  * DO NOT USE THIS FILE DIRECTLY IN YOUR APPLICATION.
  *
  * This configuration is consumed by the CLI command:
- * `vp dlx @better-auth/cli generate --config script/auth-cli.ts --output ../db/src/auth-schema.ts`
+ * `vp exec auth generate --config script/auth-cli.ts --output ../db/src/auth-schema.ts`
  *
  * For actual authentication usage, import from "../src/index.ts" instead.
  */

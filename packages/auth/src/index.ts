@@ -6,16 +6,14 @@ import { oAuthProxy } from "better-auth/plugins";
 
 import { db } from "@acme/db/client";
 
-export function initAuth<
-  TExtraPlugins extends BetterAuthPlugin[] = [],
->(options: {
+export function initAuth(options: {
   baseUrl: string;
   productionUrl: string;
   secret: string | undefined;
 
   discordClientId: string;
   discordClientSecret: string;
-  extraPlugins?: TExtraPlugins;
+  extraPlugins?: BetterAuthPlugin[];
 }) {
   const config = {
     database: drizzleAdapter(db, {
