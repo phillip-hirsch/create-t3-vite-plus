@@ -13,7 +13,6 @@
     "generate": "dotenv -e ../../.env -- vp exec auth generate --config script/auth-cli.ts --output ../db/src/auth-schema.ts"
   },
   "dependencies": {
-    "@acme/db": "workspace:*",
     "@better-auth/expo": "catalog:",
     "@t3-oss/env-core": "^0.13.8",
     "better-auth": "catalog:",
