@@ -9,7 +9,7 @@ import { protectedProcedure, publicProcedure } from "../trpc";
 export const postRouter = {
   all: publicProcedure.query(({ ctx }) => {
     return ctx.db.query.Post.findMany({
-      orderBy: desc(Post.id),
+      orderBy: desc(Post.createdAt),
       limit: 10,
     });
   }),

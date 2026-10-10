@@ -1,6 +1,7 @@
 {
   "extends": "@acme/tsconfig/base.json",
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "lib": ["ES2022", "dom"],
     "jsx": "preserve",
     "paths": {

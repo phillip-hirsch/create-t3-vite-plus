@@ -34,7 +34,7 @@ export default defineConfig({
   fmt: {
     printWidth: 80,
     sortPackageJson: false,
-    ignorePatterns: ["**/routeTree.gen.ts"],
+    ignorePatterns: ["**/routeTree.gen.ts", "packages/db/migrations/**"],
     sortTailwindcss: {
       functions: ["cn", "cva"],
       // Loads the shared theme, so classes like `bg-primary` sort as Tailwind

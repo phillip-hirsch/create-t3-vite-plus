@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "clean": "git clean -xdf .cache .cloudflare .tanstack .wrangler dist node_modules",
+    "db:migrate": "node scripts/db-migrate.ts --local --persist-to .cloudflare/state",
+    "db:migrate:remote": "node scripts/db-migrate.ts",
     "dev": "dotenv -e ../../.env -- vp dev",
     "preview": "dotenv -e ../../.env -- vp preview"
   },

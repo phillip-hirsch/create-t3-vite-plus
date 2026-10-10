@@ -77,8 +77,8 @@ vp install
 # There is an `.env.example` in the root directory you can use for reference
 cp .env.example .env
 
-# Push the Drizzle schema to the database
-vp run db:push
+# Apply the migrations to the local D1 database
+vp run db:migrate
 ```
 
 Run `vp run dev` to start the web app at `http://localhost:3000`. The mobile app uses the same port for API requests. Start it with `vp run dev:expo` in a second terminal, so Expo's keyboard shortcuts and QR code get their own terminal.

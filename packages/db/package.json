@@ -19,18 +19,18 @@
   "license": "MIT",
   "scripts": {
     "clean": "git clean -xdf .cache dist node_modules",
-    "push": "dotenv -e ../../.env -- drizzle-kit push",
-    "studio": "dotenv -e ../../.env -- drizzle-kit studio"
+    "generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "@vercel/postgres": "^0.10.0",
-    "drizzle-orm": "^0.44.7",
+    "drizzle-orm": "^0.45.4",
     "drizzle-zod": "^0.8.3",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",
-    "drizzle-kit": "^0.31.5",
+    "@cloudflare/workers-types": "^5.20261008.1",
+    "@types/node": "catalog:",
+    "drizzle-kit": "^0.31.11",
     "typescript": "catalog:",
     "vite-plus": "catalog:"
   }
