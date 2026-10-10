@@ -13,6 +13,7 @@
     "db:generate": "vp run --filter @acme/db generate",
     "db:migrate": "vp run --filter @acme/tanstack-start db:migrate",
     "db:migrate:remote": "vp run --filter @acme/tanstack-start db:migrate:remote",
+    "deploy": "vp run --filter @acme/tanstack-start deploy",
     "dev": "vp run --filter @acme/tanstack-start dev",
     "dev:expo": "vp run --filter @acme/expo dev",
     "format": "vp fmt --check",
