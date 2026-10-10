@@ -17,7 +17,13 @@ export default defineConfig({
     strictPort: true,
   },
   plugins: lazyPlugins(() => [
-    cloudflare({ viteEnvironment: { name: "ssr" } }),
+    cloudflare({
+      viteEnvironment: { name: "ssr" },
+      // The smoke suite previews against its own local state.
+      persistState: {
+        path: process.env.SMOKE_STATE_DIR ?? ".cloudflare/state",
+      },
+    }),
     tanstackStart(),
     viteReact(),
     tailwindcss(),

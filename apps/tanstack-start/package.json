@@ -8,7 +8,8 @@
     "db:migrate": "node scripts/db-migrate.ts --local --persist-to .cloudflare/state",
     "db:migrate:remote": "node scripts/db-migrate.ts",
     "dev": "dotenv -e ../../.env -- vp dev",
-    "preview": "dotenv -e ../../.env -- vp preview"
+    "preview": "dotenv -e ../../.env -- vp preview",
+    "test": "vp test"
   },
   "dependencies": {
     "@acme/api": "workspace:*",
