@@ -40,6 +40,11 @@ export default defineConfig({
           env: ["NODE_ENV", "CLOUDFLARE_ENV"],
         },
       },
+      deploy: {
+        command: "cf deploy --prebuilt",
+        dependsOn: ["build"],
+        cache: false,
+      },
       typecheck,
     },
   },
