@@ -284,14 +284,15 @@ Steps 1 to 5 are one-time setup. Run the commands from `apps/tanstack-start`. Th
 
 #### Changing a secret
 
-Set the new value, then redeploy:
-
 ```bash
-vp exec cf workers secrets update AUTH_SECRET --worker acme-tanstack-start --type secret_text --text "<new value>"
-vp run deploy
+vp exec cf workers secrets update AUTH_SECRET --worker acme-tanstack-start --type secret_text
 ```
 
-The command is the same for `AUTH_DISCORD_ID`, `AUTH_DISCORD_SECRET` and `WEB_APP_ORIGIN`. The web app reads its env once, when the Worker loads, so a Worker that is already running can keep the old value until you redeploy.
+`cf` asks for the new value and masks what you type. The command is the same for `AUTH_DISCORD_ID`, `AUTH_DISCORD_SECRET` and `WEB_APP_ORIGIN`. In a script, pipe the value to the command on stdin. `--text <value>` works too, but it leaves the secret in your shell history and shows it in the process list.
+
+The new value can take a while to apply everywhere. Cloudflare runs the Worker in isolates, and the web app reads its env once per isolate, when the isolate loads the Worker's code. Changing a secret doesn't change the code, so Cloudflare [may reuse the isolates that are already running](https://developers.cloudflare.com/workers/runtime-apis/bindings/#making-changes-to-bindings), and those keep the old value until Cloudflare replaces them. Cloudflare doesn't say when that happens. `vp run deploy` may not replace them either while the code is unchanged, because it uploads the same code.
+
+When the old value must stop working promptly, for example after `AUTH_SECRET` leaked, change the secret and then deploy a change to the web app's code, one that changes the built output. Isolates that load the new code read the new value.
 
 #### Workers Free or Paid
 
