@@ -2,7 +2,7 @@
 
 > [!NOTE]
 >
-> The web app uses TanStack Start and serves the API for the Expo mobile app.
+> The web app uses TanStack Start and serves the API for the Expo mobile app. It runs on Cloudflare Workers with a D1 database.
 
 ## Installation
 
@@ -39,14 +39,15 @@ apps
       ├─ Tanstack Start v1 (rc)
       ├─ React 19
       ├─ Tailwind CSS v4
-      └─ E2E Typesafe API Server & Client
+      ├─ E2E Typesafe API Server & Client
+      └─ Runs on Cloudflare Workers
 packages
   ├─ api
   │   └─ tRPC v11 router definition
   ├─ auth
   │   └─ Authentication using better-auth.
   ├─ db
-  │   └─ Typesafe db calls using Drizzle & Supabase
+  │   └─ Typesafe db calls using Drizzle & Cloudflare D1
   ├─ generator
   │   └─ `vp create` template for new packages
   └─ ui
@@ -63,7 +64,7 @@ tooling
 ## Quick Start
 
 > **Note**
-> The [db](./packages/db) package is preconfigured to use Supabase and is **edge-bound** with the [Vercel Postgres](https://github.com/vercel/storage/tree/main/packages/postgres) driver. If you're using something else, make the necessary modifications to the [schema](./packages/db/src/schema.ts) as well as the [client](./packages/db/src/index.ts) and the [drizzle config](./packages/db/drizzle.config.ts).
+> The web app deploys to [Cloudflare Workers](https://developers.cloudflare.com/workers), and the [db](./packages/db) package uses [Cloudflare D1](https://developers.cloudflare.com/d1). Local development needs no Cloudflare account. See [Deployment](#deployment) for production.
 
 To get it running, follow the steps below:
 
@@ -83,16 +84,42 @@ vp run db:migrate
 
 Run `vp run dev` to start the web app at `http://localhost:3000`. The mobile app uses the same port for API requests. Start it with `vp run dev:expo` in a second terminal, so Expo's keyboard shortcuts and QR code get their own terminal.
 
-### 2. Generate Better Auth Schema
+`vp run dev` warns about a missing `WEB_APP_ORIGIN` secret until you set one. You can ignore the warning in dev.
 
-This project uses [Better Auth](https://www.better-auth.com) for authentication. The auth schema needs to be generated using the Better Auth CLI before you can use the authentication features.
+### 2. Database
+
+The [db](./packages/db) package uses [Drizzle](https://orm.drizzle.team) with [Cloudflare D1](https://developers.cloudflare.com/d1), a SQLite database. The web app reaches it through its `DB` binding, so there is no connection string to configure. In dev the database is a local file under `apps/tanstack-start/.cloudflare/state`. `vp run db:migrate` creates its tables from the SQL files in [`packages/db/migrations`](./packages/db/migrations).
+
+After you change the [schema](./packages/db/src/schema.ts), generate a migration and apply it:
+
+```bash
+# Generate a SQL migration from the schema. Commit the new files.
+vp run db:generate
+
+# Apply the migrations to the local D1 database
+vp run db:migrate
+```
+
+To browse the local data, open the Local Explorer at `http://localhost:3000/cdn-cgi/local/explorer` while `vp run dev` is running. The starter doesn't include Drizzle Studio, because it can't read D1 without an API token or extra setup.
+
+[Deployment](#deployment) covers the production database.
+
+### 3. Generate Better Auth Schema
+
+This project uses [Better Auth](https://www.better-auth.com) for authentication. The Better Auth CLI generates the Drizzle schema for the auth tables. The generated file is committed, so you only need to run the CLI after you change the auth setup, for example when you add a plugin.
 
 ```bash
 # Generate the Better Auth schema
 vp run auth:generate
+
+# Then generate and apply a migration for the changed tables
+vp run db:generate
+vp run db:migrate
 ```
 
-This command runs the Better Auth CLI with the following configuration:
+The CLI asks before it overwrites the schema file. Run `vp run auth:generate --yes` to skip the question.
+
+`vp run auth:generate` runs the Better Auth CLI with the following configuration:
 
 - **Config file**: `packages/auth/script/auth-cli.ts` - A CLI-only configuration file (isolated from src to prevent imports)
 - **Output**: `packages/db/src/auth-schema.ts` - Generated Drizzle schema for authentication tables
@@ -107,7 +134,7 @@ The generation process:
 
 For more information about the Better Auth CLI, see the [official documentation](https://www.better-auth.com/docs/concepts/cli#generate).
 
-### 3. Configure Expo `dev`-script
+### 4. Configure Expo `dev`-script
 
 #### Use iOS Simulator
 
@@ -133,21 +160,21 @@ For more information about the Better Auth CLI, see the [official documentation]
 
 3. Run `vp run dev:expo` at the project root folder.
 
-### 4. Configuring Better-Auth to work with Expo
+### 5. Configuring Better-Auth to work with Expo
 
 In order to get Better-Auth to work with Expo, you must either:
 
 #### Deploy the Auth Proxy (RECOMMENDED)
 
-Better Auth comes with an [auth proxy plugin](https://www.better-auth.com/docs/plugins/oauth-proxy). Deploy the web app in `apps/tanstack-start` and set `WEB_APP_ORIGIN` to its production origin, such as `https://your-web-app.example.com`, in your local and deployed environments. It's required in production. Without it, local development uses the current web app URL.
+Better Auth comes with an [auth proxy plugin](https://www.better-auth.com/docs/plugins/oauth-proxy). [Deploy the web app](#web-app), then set `WEB_APP_ORIGIN` in your root `.env` to the Web app origin, such as `https://acme-tanstack-start.<your-subdomain>.workers.dev`. The deployed web app already has the same value as a secret.
 
-The auth package uses this URL for both the OAuth proxy and the Discord callback. Register `<production-origin>/api/auth/callback/discord` with Discord. The mobile app's sign-in uses the deployed web app to complete the OAuth flow.
+The auth package uses the Web app origin for both the OAuth proxy and the Discord callback, so Discord only needs the callback you registered when deploying: `<Web app origin>/api/auth/callback/discord`. The mobile app's sign-in then completes the OAuth flow through the deployed web app. Without `WEB_APP_ORIGIN`, local development uses the local web app's URL for both.
 
 #### Add your local IP to your OAuth provider
 
 You can alternatively add your local IP (e.g. `192.168.x.y:$PORT`) to your OAuth provider. This may not be as reliable as your local IP may change when you change networks. Some OAuth providers may also only support a single callback URL for each app making this approach unviable for some providers (e.g. GitHub).
 
-### 5a. When it's time to add a new UI component
+### 6a. When it's time to add a new UI component
 
 Run the `ui-add` script to add a new UI component using the interactive `shadcn/ui` CLI:
 
@@ -157,7 +184,7 @@ vp run ui-add
 
 When the component(s) has been installed, you should be good to go and start using it in your app.
 
-### 5b. When it's time to add a new package
+### 6b. When it's time to add a new package
 
 Run the package generator in the monorepo root:
 
@@ -187,18 +214,98 @@ If you need to share runtime code between the client and server, such as input v
 
 ### Web app
 
-Deploy `apps/tanstack-start` before using the mobile app in production. It serves both the tRPC API and the auth routes.
+The web app deploys to [Cloudflare Workers](https://developers.cloudflare.com/workers) and keeps its data in [D1](https://developers.cloudflare.com/d1). Deploy it before using the mobile app in production. It serves both the tRPC API and the auth routes.
 
-1. Configure `POSTGRES_URL`, `AUTH_SECRET`, `AUTH_DISCORD_ID`, and `AUTH_DISCORD_SECRET` in your deployment environment.
-2. Set `WEB_APP_ORIGIN` to the deployed web app's origin. It's required in production. Register the Discord callback described above.
-3. Build with `vp run build`. The default Nitro output runs with `node apps/tanstack-start/.output/server/index.mjs`.
-4. Point the mobile app's [`getBaseUrl`](./apps/expo/src/utils/base-url.ts) at the same deployed web app.
+Steps 1 to 5 are one-time setup. Run the commands from `apps/tanstack-start`. The `cf` CLI is installed there, so `vp exec cf` finds it.
+
+1. Log in to Cloudflare.
+
+   ```bash
+   cd apps/tanstack-start
+   vp exec cf auth login
+   ```
+
+2. Create the D1 database.
+
+   ```bash
+   vp exec cf d1 create --name acme-tanstack-start
+   ```
+
+   Copy the database ID from the output into [`cloudflare.config.ts`](./apps/tanstack-start/cloudflare.config.ts), where it replaces the placeholder ID of the `DB` binding. Commit the change. `cf deploy` can create a missing database for you, but it doesn't write the ID to the config, and the remote migrations need that ID. So create the database yourself.
+
+3. Apply the migrations.
+
+   ```bash
+   # Local D1 state is keyed by the database ID, so the local database is empty again
+   vp run db:migrate
+
+   # Apply the same migrations to the database you just created
+   vp run db:migrate:remote
+   ```
+
+   Run `vp run db:migrate:remote` again whenever you add a migration, before you deploy the code that needs it.
+
+4. Choose the Web app origin and register the Discord callback.
+
+   The Web app origin is the public origin the deployed web app is served from. Without a custom domain it is `https://acme-tanstack-start.<your-subdomain>.workers.dev`. `acme-tanstack-start` is the Worker's `name` in `cloudflare.config.ts`, and the Cloudflare dashboard shows your `workers.dev` subdomain under Workers & Pages.
+
+   In the [Discord developer portal](https://discord.com/developers/applications), add `<Web app origin>/api/auth/callback/discord` as a redirect of your application.
+
+5. Deploy for the first time, with the secrets.
+
+   The Worker needs four secrets: `AUTH_SECRET`, `AUTH_DISCORD_ID`, `AUTH_DISCORD_SECRET` and `WEB_APP_ORIGIN`. `cf deploy` won't create a Worker while one of them is missing, and you can't set a secret on a Worker that doesn't exist yet. So the first deploy uploads them from a file.
+
+   Create `.env.production.local` in the repository root. Git ignores it.
+
+   ```bash
+   # Generate one with `openssl rand -base64 32`
+   AUTH_SECRET="..."
+   AUTH_DISCORD_ID="..."
+   AUTH_DISCORD_SECRET="..."
+   WEB_APP_ORIGIN="https://acme-tanstack-start.<your-subdomain>.workers.dev"
+   ```
+
+   ```bash
+   # The path is relative to apps/tanstack-start
+   vp run deploy --secrets-file ../../.env.production.local
+   ```
+
+   Delete the file afterwards. The Worker keeps its secrets.
+
+6. Deploy again whenever you want to ship.
+
+   ```bash
+   vp run deploy
+   ```
+
+   `vp run deploy` builds the web app and then runs `cf deploy --prebuilt`. The build comes from the cache when nothing changed. The deploy step is never cached, and it doesn't upload secrets. `vpr deploy` does the same, and both also work from the repository root.
+
+7. Point the mobile app's [`getBaseUrl`](./apps/expo/src/utils/base-url.ts) at the Web app origin.
+
+#### Changing a secret
+
+Set the new value, then redeploy:
+
+```bash
+vp exec cf workers secrets update AUTH_SECRET --worker acme-tanstack-start --type secret_text --text "<new value>"
+vp run deploy
+```
+
+The command is the same for `AUTH_DISCORD_ID`, `AUTH_DISCORD_SECRET` and `WEB_APP_ORIGIN`. The web app reads its env once, when the Worker loads, so a Worker that is already running can keep the old value until you redeploy.
+
+#### Workers Free or Paid
+
+The Workers Free plan may be enough to try the starter. Workers Paid is recommended for anything you rely on. The limits you are most likely to hit on Free:
+
+- 10 ms of CPU time per request. Cloudflare says requests that handle authentication or server-side rendering typically use 10 to 20 ms.
+- 50 D1 queries per Worker invocation, against 1,000 on Paid.
+- 500 MB per D1 database, against 10 GB on Paid.
 
 ### Expo
 
 Deploying your mobile app works differently from deploying the web app. Instead of "deploying" your app online, you need to submit production builds of your app to app stores, like [Apple App Store](https://www.apple.com/app-store) and [Google Play](https://play.google.com/store/apps). You can read the full [guide to distributing your app](https://docs.expo.dev/distribution/introduction), including best practices, in the Expo docs.
 
-1. Make sure to modify the `getBaseUrl` function to point to the deployed web app's URL:
+1. Make sure to modify the `getBaseUrl` function to point to the Web app origin:
 
    [`apps/expo/src/utils/base-url.ts`](./apps/expo/src/utils/base-url.ts)
 
