@@ -15,8 +15,13 @@ test("the home page server-renders", async () => {
 
   expect(response.status).toBe(200);
   expect(response.headers.get("content-type")).toContain("text/html");
-  // A seeded post, so the page rendered with data from D1.
-  expect(await response.text()).toContain("Newest post");
+  // A seeded post, so the page rendered with data from D1. The hydration
+  // scripts carry the posts too, so only the markup outside them counts.
+  const markup = (await response.text()).replaceAll(
+    /<script.*?<\/script>/gis,
+    "",
+  );
+  expect(markup).toContain("Newest post");
 });
 
 test("post.all returns posts newest first", async () => {
