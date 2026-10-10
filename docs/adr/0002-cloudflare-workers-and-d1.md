@@ -14,6 +14,7 @@ Rejected alternatives:
 ## Consequences
 
 - `db:push` is replaced by generated migrations (`db:generate`, `db:migrate`). Migration files are committed.
+- Drizzle Studio (`db:studio`) is dropped. Against remote D1 it needs an API token (the `d1-http` driver). Against local D1 it needs an extra SQLite driver and the path of a state file whose name is a hash. The dev server's Local Explorer (`/cdn-cgi/local/explorer`) and the Cloudflare dashboard cover browsing the data.
 - The D1 database is created once with `cf d1 create`, and its ID is committed in `cloudflare.config.ts`. `cf deploy`'s auto-provisioning isn't used, because it doesn't record the ID that remote migrations need.
 - Env values are declared with `bindings.secret()`. In dev they still come from the root `.env`. In production they are set once with `cf workers secrets update`, never as part of `deploy`. Env is read at module load, so rotating a secret means redeploying.
 - `AUTH_REDIRECT_PROXY_URL` becomes `WEB_APP_ORIGIN` (the **Web app origin**). It's required in production.
