@@ -8,9 +8,10 @@ node_modules
 # testing
 coverage
 
-# nitro
-.nitro/
-.output/
+# cloudflare
+.cloudflare/
+.wrangler/
+.dev.vars*
 
 # expo
 .expo/
@@ -35,9 +36,6 @@ yarn-error.log*
 # local env files
 .env
 .env*.local
-
-# vercel
-.vercel
 
 # typescript
 dist/

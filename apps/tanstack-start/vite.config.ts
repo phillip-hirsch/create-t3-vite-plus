@@ -1,28 +1,14 @@
+import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
-import { nitro } from "nitro/vite";
-import { defineConfig, esmExternalRequirePlugin, lazyPlugins } from "vite-plus";
+import { defineConfig, lazyPlugins } from "vite-plus";
 
 import { typecheck } from "@acme/tsconfig/typecheck";
 
 export default defineConfig({
   resolve: {
     tsconfigPaths: true,
-  },
-  environments: {
-    ssr: {
-      build: {
-        rolldownOptions: {
-          // Keep React requires visible to Nitro so SSR uses one React instance.
-          // Rolldown ignores this plugin if it comes from a different
-          // vite-plus-core copy than the one building. `vp run` from the repo
-          // root builds with the root's copy, so the root devDepends on
-          // `@types/node` to resolve the same peer variant as this app.
-          plugins: [esmExternalRequirePlugin({ external: ["react"] })],
-        },
-      },
-    },
   },
   server: {
     // Listen on all interfaces so the mobile app can reach the API.
@@ -31,7 +17,7 @@ export default defineConfig({
     strictPort: true,
   },
   plugins: lazyPlugins(() => [
-    nitro(),
+    cloudflare({ viteEnvironment: { name: "ssr" } }),
     tanstackStart(),
     viteReact(),
     tailwindcss(),
@@ -41,24 +27,17 @@ export default defineConfig({
       build: {
         command: "vp build",
         // Cached tasks get a clean environment, so pass through (and
-        // fingerprint) the variables the app's env schema and Nitro read.
+        // fingerprint) the variables the build reads.
         cache: {
-          // Nitro reads its previous output before overwriting it.
-          input: [{ auto: true }, "!.nitro/**", "!.output/**"],
-          env: [
-            "SKIP_ENV_VALIDATION",
-            "POSTGRES_URL",
-            "AUTH_*",
-            "WEB_APP_ORIGIN",
-            "NODE_ENV",
-            "PORT",
-            "NITRO_PRESET",
-            "SERVER_PRESET",
-            "GITHUB_ACTIONS",
-            "NITRO_COMPATIBILITY_DATE",
-            "SERVER_COMPATIBILITY_DATE",
-            "COMPATIBILITY_DATE",
+          // The Cloudflare plugin reads its previous output before
+          // overwriting it.
+          input: [
+            { auto: true },
+            "!.cloudflare/**",
+            "!.wrangler/**",
+            "!dist/**",
           ],
+          env: ["NODE_ENV", "CLOUDFLARE_ENV"],
         },
       },
       typecheck,

@@ -17,7 +17,7 @@ export const typecheck = {
       workspace("!**/node_modules/**"),
       // tsc rewrites its own build info, which would block caching.
       workspace("!**/.cache/**"),
-      workspace("!**/{.nitro,.output}/**"),
+      workspace("!**/{.cloudflare,.wrangler}/**"),
     ],
   },
 };

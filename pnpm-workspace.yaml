@@ -5,6 +5,7 @@ packages:
 
 catalog:
   "@better-auth/expo": 1.7.7
+  "@cloudflare/vite-plugin": 2.0.0-beta.sha-91c870c02
   "@tailwindcss/postcss": ^4.1.16
   "@tailwindcss/vite": ^4.3.3
   "@tanstack/react-form": ^1.23.8
@@ -16,6 +17,7 @@ catalog:
   "@vitejs/plugin-react": 6.1.2
   auth: 1.7.7
   better-auth: 1.7.7
+  cf: 1.0.0-beta.14
   tailwindcss: ^4.1.16
   typescript: ~7.0.2
   zod: ^4.6.5
@@ -34,6 +36,7 @@ linkWorkspacePackages: true
 allowBuilds:
   "@tailwindcss/oxide": true
   esbuild: true
+  workerd: true
   # Never built before pnpm 11, which started requiring an explicit choice.
   "@prisma/client": false
   "@prisma/engines": false

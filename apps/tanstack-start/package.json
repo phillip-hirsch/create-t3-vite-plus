@@ -4,9 +4,9 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "clean": "git clean -xdf .cache .nitro .output .tanstack node_modules",
+    "clean": "git clean -xdf .cache .cloudflare .tanstack .wrangler dist node_modules",
     "dev": "dotenv -e ../../.env -- vp dev",
-    "start": "node .output/server/index.mjs"
+    "preview": "dotenv -e ../../.env -- vp preview"
   },
   "dependencies": {
     "@acme/api": "workspace:*",
@@ -26,7 +26,6 @@
     "@trpc/server": "catalog:",
     "@trpc/tanstack-react-query": "catalog:",
     "better-auth": "catalog:",
-    "nitro": "3.0.260903-beta",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "superjson": "2.2.3",
@@ -35,11 +34,13 @@
   "devDependencies": {
     "@acme/tailwind-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
+    "@cloudflare/vite-plugin": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@vitejs/plugin-react": "catalog:",
+    "cf": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
