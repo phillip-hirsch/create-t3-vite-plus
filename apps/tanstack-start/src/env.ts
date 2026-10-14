@@ -26,7 +26,9 @@ export const env = createEnv({
   },
   /**
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
+   * NODE_ENV is read by name, so that Vite inlines it: the browser bundle's
+   * `process.env` is empty.
    */
-  runtimeEnv: process.env,
+  runtimeEnv: { ...process.env, NODE_ENV: process.env.NODE_ENV },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 });

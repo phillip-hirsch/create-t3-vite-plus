@@ -5,9 +5,7 @@ export function getBaseUrl() {
     return window.location.origin;
   }
   // Env validation requires WEB_APP_ORIGIN in production.
-  // Not `env.NODE_ENV`: the Worker's process.env lacks it; Vite inlines this.
-  // eslint-disable-next-line no-restricted-properties
-  if (process.env.NODE_ENV === "production" && env.WEB_APP_ORIGIN) {
+  if (env.NODE_ENV === "production" && env.WEB_APP_ORIGIN) {
     return env.WEB_APP_ORIGIN;
   }
 
