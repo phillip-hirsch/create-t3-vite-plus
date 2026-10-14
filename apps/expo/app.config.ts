@@ -28,11 +28,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       backgroundColor: "#1F104A",
     },
   },
-  // extra: {
-  //   eas: {
-  //     projectId: "your-eas-project-id",
-  //   },
-  // },
+  extra: {
+    // The web app's local port, which the mobile app calls in development.
+    // The web app reads the same variable in `apps/tanstack-start/vite.config.ts`.
+    webAppPort: Number(process.env.WEB_APP_PORT || 3000),
+    // eas: {
+    //   projectId: "your-eas-project-id",
+    // },
+  },
   experiments: {
     tsconfigPaths: true,
     typedRoutes: true,

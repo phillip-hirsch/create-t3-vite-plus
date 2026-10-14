@@ -10,6 +10,7 @@ export function getBaseUrl() {
     return env.WEB_APP_ORIGIN;
   }
 
+  // `vite.config.ts` defines it.
   // eslint-disable-next-line no-restricted-properties
-  return `http://localhost:${process.env.PORT ?? 3000}`;
+  return `http://localhost:${process.env.WEB_APP_PORT}`;
 }

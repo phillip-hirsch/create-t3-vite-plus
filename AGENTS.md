@@ -1,3 +1,9 @@
+Before writing or reviewing code, read `CODING_STANDARDS.md`: judgement calls that lint can't enforce, such as proving env-dependent behaviour against the built Worker.
+
+## Checks
+
+Run `vp run verify` to check your work. CI and the pre-push hook run the same script, so new checks go in it.
+
 ## Agent skills
 
 ### Issue tracker

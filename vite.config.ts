@@ -93,6 +93,7 @@ export default defineConfig({
     ignorePatterns: [
       "**/*.config.*",
       "packages/auth/script/**",
+      "scripts/**",
       ...toolingIgnores,
     ],
     // Vendored from dmmulroy/anti-slop; see tooling/anti-slop/UPSTREAM.md.

@@ -4,11 +4,11 @@
   "main": "index.ts",
   "scripts": {
     "clean": "git clean -xdf .cache .expo android ios node_modules",
-    "dev": "expo start",
-    "dev:android": "expo start --android",
-    "dev:ios": "expo start --ios",
-    "android": "expo run:android",
-    "ios": "expo run:ios"
+    "dev": "dotenv -e ../../.env -- expo start",
+    "dev:android": "dotenv -e ../../.env -- expo start --android",
+    "dev:ios": "dotenv -e ../../.env -- expo start --ios",
+    "android": "dotenv -e ../../.env -- expo run:android",
+    "ios": "dotenv -e ../../.env -- expo run:ios"
   },
   "dependencies": {
     "@better-auth/expo": "catalog:",
