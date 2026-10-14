@@ -84,6 +84,8 @@ vp run db:migrate
 
 Run `vp run dev` to start the web app at `http://localhost:3000`. The mobile app uses the same port for API requests. Start it with `vp run dev:expo` in a second terminal, so Expo's keyboard shortcuts and QR code get their own terminal.
 
+To use another port, set `WEB_APP_PORT` in `.env`. `vp run dev`, `vp preview` and the mobile app's API requests all use it, so restart the web app and Expo after you change it.
+
 `vp run dev` warns about a missing `WEB_APP_ORIGIN` secret until you set one. You can ignore the warning in dev.
 
 ### 2. Database
@@ -100,7 +102,7 @@ vp run db:generate
 vp run db:migrate
 ```
 
-To browse the local data, open the Local Explorer at `http://localhost:3000/cdn-cgi/local/explorer` while `vp run dev` is running. The starter doesn't include Drizzle Studio, because it can't read D1 without an API token or extra setup.
+To browse the local data, open the Local Explorer at `http://localhost:3000/cdn-cgi/local/explorer` (or your `WEB_APP_PORT`) while `vp run dev` is running. The starter doesn't include Drizzle Studio, because it can't read D1 without an API token or extra setup.
 
 [Deployment](#deployment) covers the production database.
 

@@ -11,6 +11,10 @@ import { typecheck } from "@acme/tsconfig/typecheck";
 // port for it, and then the one that loses answers every request with a 500.
 const smokeStateDir = process.env.SMOKE_STATE_DIR;
 
+// The web app's local port, for `vp dev` and `vp preview`. The mobile app reads
+// the same variable in `apps/expo/app.config.ts`.
+const port = Number(process.env.WEB_APP_PORT || 3000);
+
 export default defineConfig({
   resolve: {
     tsconfigPaths: true,
@@ -18,9 +22,13 @@ export default defineConfig({
   server: {
     // Listen on all interfaces so the mobile app can reach the API.
     host: true,
-    port: 3000,
+    port,
     strictPort: true,
   },
+  // Host and strictPort default to the server's.
+  preview: { port },
+  // The Worker only sees declared bindings, so `~/lib/url` gets the port here.
+  define: { "process.env.WEB_APP_PORT": JSON.stringify(String(port)) },
   plugins: lazyPlugins(() => [
     cloudflare({
       viteEnvironment: { name: "ssr" },
