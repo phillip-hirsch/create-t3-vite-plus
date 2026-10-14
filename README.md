@@ -216,6 +216,9 @@ If you need to share runtime code between the client and server, such as input v
 
 The web app deploys to [Cloudflare Workers](https://developers.cloudflare.com/workers) and keeps its data in [D1](https://developers.cloudflare.com/d1). Deploy it before using the mobile app in production. It serves both the tRPC API and the auth routes.
 
+> [!WARNING]
+> If you deployed an earlier version of this starter, its data is in Postgres. These steps create an empty D1 database and apply the schema, but they don't copy any rows, so existing posts and auth accounts won't be there. Export your Postgres data and import it into D1 before you switch over, or start fresh.
+
 Steps 1 to 5 are one-time setup. Run the commands from `apps/tanstack-start`. The `cf` CLI is installed there, so `vp exec cf` finds it.
 
 1. Log in to Cloudflare.
