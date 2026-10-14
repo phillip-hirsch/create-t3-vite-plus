@@ -21,7 +21,7 @@
     "lint": "vp lint",
     "lint:fix": "vp lint --fix",
     "lint:ws": "vp dlx sherif@latest",
-    "prepare": "vp config --no-agent",
+    "prepare": "vp config --no-agent || echo Skipped git hook setup",
     "postinstall": "vp run lint:ws",
     "test": "vp run -r test",
     "typecheck": "vp run -r typecheck",

@@ -213,6 +213,8 @@ The generator lives in `packages/generator` and is registered in the root `vite.
 
 `vp install` sets up a pre-push hook that runs `vp run verify`, so a push that would fail these checks in CI fails on your machine first. To skip the hook for one push, run `git push --no-verify`. To turn it off in your clone, run `vp hooks disable`.
 
+`vp hooks status` shows whether the hook is active. pnpm skips `prepare` when your dependencies are already up to date, so a clone made before the hook existed needs one `vp hooks enable`.
+
 To add a check, add it to the `verify` script in the root `package.json`. CI and the hook both run that script. Build and the smoke suite take too long for a hook, so they run only in CI.
 
 ## FAQ
