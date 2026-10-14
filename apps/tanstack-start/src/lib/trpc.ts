@@ -25,6 +25,7 @@ export const makeTRPCClient = createIsomorphicFn()
           createContext: () => {
             const headers = new Headers(getRequestHeaders());
             headers.set("x-trpc-source", "tanstack-start-server");
+
             return Api.createTRPCContext({ auth, headers });
           },
         }),
@@ -45,6 +46,7 @@ export const makeTRPCClient = createIsomorphicFn()
           headers() {
             const headers = new Headers();
             headers.set("x-trpc-source", "tanstack-start-client");
+
             return headers;
           },
         }),

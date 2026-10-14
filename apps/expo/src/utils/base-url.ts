@@ -22,7 +22,10 @@ export const getBaseUrl = () => {
       "Failed to get localhost. Please point to your production server.",
     );
   }
-  // `app.config.ts` sets it from WEB_APP_PORT.
+
+  // SAFETY: `app.config.ts` always sets `extra.webAppPort` to a number, from
+  // WEB_APP_PORT; Expo types `extra` as `any`.
   const port = Constants.expoConfig?.extra?.webAppPort as number;
+
   return `http://${localhost}:${port}`;
 };

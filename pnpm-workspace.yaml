@@ -2,10 +2,15 @@ packages:
   - apps/*
   - packages/*
   - tooling/*
+  # Vendored lint plugin, not a package.
+  - "!tooling/anti-slop"
 
 catalog:
   "@better-auth/expo": 1.7.7
   "@cloudflare/vite-plugin": 2.0.0-beta.sha-91c870c02
+  # Must match the oxlint version bundled with vite-plus; anti-slop's plugin
+  # API changes with it.
+  "@oxlint/plugins": 1.87.0
   "@tailwindcss/postcss": ^4.1.16
   "@tailwindcss/vite": ^4.3.3
   "@tanstack/react-form": ^1.23.8

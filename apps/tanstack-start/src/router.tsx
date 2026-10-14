@@ -14,7 +14,9 @@ export function getRouter() {
       hydrate: { deserializeData: SuperJSON.deserialize },
     },
   });
+
   const trpcClient = makeTRPCClient();
+
   const trpc = createTRPCOptionsProxy({
     client: trpcClient,
     queryClient,
@@ -32,6 +34,7 @@ export function getRouter() {
       />
     ),
   });
+
   setupRouterSsrQueryIntegration({
     router,
     queryClient,

@@ -21,6 +21,23 @@ const restrictEnvAccess = {
   ],
 } as const;
 
+// Installed agent skills and hooks, and the vendored anti-slop plugin, are not
+// project source.
+const toolingIgnores = [
+  ".agent/**",
+  ".agents/**",
+  ".claude/**",
+  ".codex/**",
+  ".continue/**",
+  ".cursor/**",
+  ".gemini/**",
+  ".opencode/**",
+  ".pi/**",
+  ".roo/**",
+  ".windsurf/**",
+  "tooling/anti-slop/**",
+];
+
 export default defineConfig({
   create: {
     templates: [
@@ -38,7 +55,11 @@ export default defineConfig({
   fmt: {
     printWidth: 80,
     sortPackageJson: false,
-    ignorePatterns: ["**/routeTree.gen.ts", "packages/db/migrations/**"],
+    ignorePatterns: [
+      "**/routeTree.gen.ts",
+      "packages/db/migrations/**",
+      ...toolingIgnores,
+    ],
     sortTailwindcss: {
       functions: ["cn", "cva"],
       // Loads the shared theme, so classes like `bg-primary` sort as Tailwind
@@ -62,14 +83,23 @@ export default defineConfig({
   lint: {
     // Only the rules below run: the ones the old ESLint config enabled
     // (eslint recommended, typescript-eslint recommended + type-checked +
-    // stylistic, React and React Hooks recommended).
-    plugins: ["typescript", "import"],
+    // stylistic, React and React Hooks recommended), plus the anti-slop rules.
+    plugins: ["typescript", "import", "oxc"],
     categories: { correctness: "off" },
     options: {
       typeAware: true,
       reportUnusedDisableDirectives: "warn",
     },
-    ignorePatterns: ["**/*.config.*", "packages/auth/script/**", "scripts/**"],
+    ignorePatterns: [
+      "**/*.config.*",
+      "packages/auth/script/**",
+      "scripts/**",
+      ...toolingIgnores,
+    ],
+    // Vendored from dmmulroy/anti-slop; see tooling/anti-slop/UPSTREAM.md.
+    jsPlugins: [
+      { name: "anti-slop", specifier: "./tooling/anti-slop/index.ts" },
+    ],
     rules: {
       "for-direction": "error",
       "no-array-constructor": "error",
@@ -191,6 +221,25 @@ export default defineConfig({
       "typescript/restrict-template-expressions": "error",
       "typescript/triple-slash-reference": "error",
       "typescript/unbound-method": "error",
+      "oxc/no-accumulating-spread": "error",
+      "anti-slop/no-array-filter-map": "error",
+      "anti-slop/no-reduce-accumulator-copy": "error",
+      "anti-slop/no-chained-type-assertions": "error",
+      "anti-slop/no-conditional-empty-object-spread": "error",
+      "anti-slop/no-known-value-widening": "error",
+      "anti-slop/no-module-mocking": "error",
+      "anti-slop/no-object-parameters": "error",
+      "anti-slop/no-reflect-apply": "error",
+      "anti-slop/no-reflect-get": "error",
+      "anti-slop/no-runtime-typeof": "error",
+      "anti-slop/no-shape-in-symbol-names": "error",
+      "anti-slop/no-unknown-parameters": "error",
+      "anti-slop/no-unknown-returns": "error",
+      "anti-slop/no-unknown-type-aliases": "error",
+      "anti-slop/no-unsafe-dictionary-type": "error",
+      "anti-slop/no-widen-then-assert": "error",
+      "anti-slop/require-readable-spacing": "error",
+      "anti-slop/require-safety-comment-for-type-assertion": "error",
     },
     overrides: [
       {

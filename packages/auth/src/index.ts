@@ -49,4 +49,5 @@ export function initAuth(options: {
 }
 
 export type Auth = ReturnType<typeof initAuth>;
+
 export type Session = Auth["$Infer"]["Session"];

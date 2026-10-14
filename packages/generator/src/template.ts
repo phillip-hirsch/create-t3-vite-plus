@@ -4,26 +4,46 @@ import { createTemplate } from "bingo";
 import { parse } from "yaml";
 import { z } from "zod";
 
-const json = (value: unknown) => `${JSON.stringify(value, null, 2)}\n`;
+type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | Json[]
+  | { [key: string]: Json | undefined };
+
+const json = (value: Json) => `${JSON.stringify(value, null, 2)}\n`;
 
 const root = new URL("../../../", import.meta.url);
-const readJson = (path: string) =>
-  JSON.parse(fs.readFileSync(new URL(path, root), "utf8")) as unknown;
 
-const { packages, catalog = {} } = parse(
-  fs.readFileSync(new URL("pnpm-workspace.yaml", root), "utf8"),
-) as { packages: string[]; catalog?: Record<string, string> };
+const read = (path: string) => fs.readFileSync(new URL(path, root), "utf8");
+
+const VersionsSchema = z.record(z.string(), z.string());
+
+const PackageJsonSchema = z.object({
+  dependencies: VersionsSchema.optional(),
+  devDependencies: VersionsSchema.optional(),
+});
+
+const { packages, catalog } = z
+  .object({
+    packages: z.array(z.string()),
+    catalog: VersionsSchema.default({}),
+  })
+  .parse(parse(read("pnpm-workspace.yaml")));
 
 // Reuse the version specifiers the workspace already has, so sherif doesn't
 // flag a second version. The default catalog wins over pinned versions.
 const knownVersions = new Map<string, string>();
+
 for (const path of fs.globSync(
   packages.map((dir) => `${dir}/package.json`),
   { cwd: root },
 )) {
-  const { dependencies, devDependencies } = readJson(path) as Partial<
-    Record<"dependencies" | "devDependencies", Record<string, string>>
-  >;
+  const { dependencies, devDependencies } = PackageJsonSchema.parse(
+    JSON.parse(read(path)),
+  );
+
   for (const [dep, version] of Object.entries({
     ...devDependencies,
     ...dependencies,
@@ -31,6 +51,7 @@ for (const path of fs.globSync(
     knownVersions.set(dep, version);
   }
 }
+
 for (const dep of Object.keys(catalog)) knownVersions.set(dep, "catalog:");
 
 export default createTemplate({

@@ -11,6 +11,7 @@ import "../styles.css";
 // It wraps your pages with the providers they need
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
   return (
     <QueryClientProvider client={queryClient}>
       {/*

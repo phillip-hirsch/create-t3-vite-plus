@@ -31,15 +31,18 @@ export const createTRPCContext = async (opts: {
   auth: Auth;
 }) => {
   const authApi = opts.auth.api;
+
   const session = await authApi.getSession({
     headers: opts.headers,
   });
+
   return {
     authApi,
     session,
     db,
   };
 };
+
 /**
  * 2. INITIALIZATION
  *
@@ -50,13 +53,16 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   // tRPC's own check reads process.env at runtime, which Vite doesn't inline.
   isDev: process.env.NODE_ENV !== "production",
   transformer: superjson,
-  errorFormatter: ({ shape, error }) => ({
-    ...shape,
+  // `opts.shape` is tRPC's default error response.
+  errorFormatter: (opts) => ({
+    ...opts.shape,
     data: {
-      ...shape.data,
+      ...opts.shape.data,
       zodError:
-        error.cause instanceof ZodError
-          ? z.flattenError(error.cause as ZodError<Record<string, unknown>>)
+        opts.error.cause instanceof ZodError
+          ? // SAFETY: only names the keys of `fieldErrors`, which are the
+            // fields of the procedure's input; other inputs have none.
+            z.flattenError(opts.error.cause as ZodError<Record<string, string>>)
           : null,
     },
   }),
@@ -121,6 +127,7 @@ export const protectedProcedure = t.procedure
     if (!ctx.session?.user) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
+
     return next({
       ctx: {
         // infers the `session` as non-nullable

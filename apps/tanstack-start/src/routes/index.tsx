@@ -64,6 +64,7 @@ function CreatePostForm() {
   const trpc = useTRPC();
 
   const queryClient = useQueryClient();
+
   const createPost = useMutation(
     trpc.post.create.mutationOptions({
       onSuccess: async () => {
@@ -104,6 +105,7 @@ function CreatePostForm() {
           {(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
+
             return (
               <Field data-invalid={isInvalid}>
                 <FieldContent>
@@ -127,6 +129,7 @@ function CreatePostForm() {
           {(field) => {
             const isInvalid =
               field.state.meta.isTouched && !field.state.meta.isValid;
+
             return (
               <Field data-invalid={isInvalid}>
                 <FieldContent>
@@ -182,6 +185,7 @@ function PostList() {
 function PostCard(props: { post: RouterOutputs["post"]["all"][number] }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+
   const deletePost = useMutation(
     trpc.post.delete.mutationOptions({
       onSuccess: async () => {
@@ -218,6 +222,7 @@ function PostCard(props: { post: RouterOutputs["post"]["all"][number] }) {
 
 function PostCardSkeleton(props: { pulse?: boolean }) {
   const { pulse = true } = props;
+
   return (
     <div className="flex flex-row rounded-lg bg-muted p-4">
       <div className="grow">

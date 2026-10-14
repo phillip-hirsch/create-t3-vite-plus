@@ -17,9 +17,11 @@ export function AuthShowcase() {
             provider: "discord",
             callbackURL: "/",
           });
+
           if (!res.data?.url) {
             throw new Error("No URL returned from signInSocial");
           }
+
           await navigate({ href: res.data.url, replace: true });
         }}
       >

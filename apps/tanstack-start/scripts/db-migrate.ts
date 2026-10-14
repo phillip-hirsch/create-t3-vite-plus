@@ -1,8 +1,11 @@
 import { spawn } from "node:child_process";
 
+import { z } from "zod/v4";
+
 import config from "../cloudflare.config.ts";
 
 const { id } = config.worker.env.DB;
+
 if (!id) {
   throw new Error("The DB binding in cloudflare.config.ts needs an id.");
 }
@@ -36,30 +39,38 @@ const cf = spawn(
 let output = "";
 let applied: boolean | undefined;
 let stopped = false;
+
 cf.stdout.setEncoding("utf8").on("data", (chunk: string) => {
   if (!quiet) process.stdout.write(chunk);
   output += chunk;
   const result = parse(output);
+
   if (result === undefined) return;
   const problem = failureMessage(result);
+
   if (problem) console.error(problem);
   applied = !problem;
   setTimeout(() => (stopped = cf.kill()), 1000).unref();
 });
+
 cf.on("exit", (code, signal) => {
   // How cf dies after this script's own stop says nothing, even if it exits
   // non-zero. Before that its exit code stands, and a signal is a failure.
   const exit = stopped ? 0 : (code ?? 1);
+
   if (signal && !stopped) console.error(`cf was stopped by ${signal}.`);
+
   if (exit === 0 && applied === undefined) {
     console.error("cf exited without a result.");
   }
+
   // A clean exit still needs a result with every migration applied.
   process.exitCode = exit === 0 && !applied ? 1 : exit;
 });
 
 // Whatever else cf does, never wait for it longer than this.
 const minutes = 5;
+
 setTimeout(() => {
   console.error(`cf didn't finish within ${minutes} minutes.`);
   cf.kill();
@@ -68,41 +79,33 @@ setTimeout(() => {
 
 // What `cf d1 migrations apply` prints: a row for each migration it ran, so
 // `[]` when there was nothing to apply.
-interface Migration {
-  name: string;
-  status: string;
-}
+const MigrationsSchema = z.array(
+  z.object({ name: z.string(), status: z.string() }),
+);
 
 // The status `cf d1 migrations apply` reports for an applied migration.
 const appliedStatus = "✅";
 
 // The complete result, or `undefined` while cf is still printing it.
-function parse(text: string): unknown {
+function parse(text: string) {
   try {
-    return JSON.parse(text);
+    return MigrationsSchema.safeParse(JSON.parse(text));
   } catch {
     return undefined;
   }
 }
 
 // Why the result doesn't count as applied, if it doesn't.
-function failureMessage(result: unknown) {
-  if (!Array.isArray(result) || !result.every(isMigration)) {
+function failureMessage(
+  result: z.ZodSafeParseResult<z.infer<typeof MigrationsSchema>>,
+) {
+  if (!result.success) {
     return "cf printed a result this script doesn't understand.";
   }
-  const failed = result.filter((row) => row.status !== appliedStatus);
+
+  const failed = result.data.filter((row) => row.status !== appliedStatus);
+
   if (failed.length > 0) {
     return `Failed to apply ${failed.map((row) => row.name).join(", ")}.`;
   }
-}
-
-function isMigration(row: unknown): row is Migration {
-  return (
-    typeof row === "object" &&
-    row !== null &&
-    "name" in row &&
-    typeof row.name === "string" &&
-    "status" in row &&
-    typeof row.status === "string"
-  );
 }
