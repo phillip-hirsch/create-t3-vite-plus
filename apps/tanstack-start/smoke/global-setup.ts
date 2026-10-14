@@ -11,6 +11,7 @@ import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
+import { fileURLToPath } from "node:url";
 
 import { queryD1 } from "./d1.ts";
 
@@ -20,6 +21,9 @@ const secrets = {
   AUTH_DISCORD_SECRET: "smoke-discord-secret",
   WEB_APP_ORIGIN: "https://smoke.example",
 };
+
+// The app directory: `vp test` can run from the repository root too.
+const app = fileURLToPath(new URL("..", import.meta.url));
 
 // Runs the built Worker in workerd against a new local D1 database, and a
 // second one without WEB_APP_ORIGIN. Returns the teardown.
@@ -84,6 +88,7 @@ function start(
 ) {
   const output = openSync(log, "a");
   const child = spawn("vp", args, {
+    cwd: app,
     detached: true,
     // eslint-disable-next-line no-restricted-properties
     env: { ...process.env, ...env },
