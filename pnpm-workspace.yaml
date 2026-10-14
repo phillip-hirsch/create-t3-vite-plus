@@ -2,6 +2,8 @@ packages:
   - apps/*
   - packages/*
   - tooling/*
+  # Vendored lint plugin, not a package.
+  - "!tooling/anti-slop"
 
 catalog:
   "@better-auth/expo": 1.7.7
