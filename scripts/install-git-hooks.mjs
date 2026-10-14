@@ -6,7 +6,7 @@ import { execSync, spawnSync } from "node:child_process";
 try {
   execSync("git rev-parse --git-dir", { stdio: "ignore" });
 } catch {
-  console.log("Skipped git hook setup: no git repository");
+  console.log("Skipped git hook setup: git or the repository is missing");
   process.exit(0);
 }
 
