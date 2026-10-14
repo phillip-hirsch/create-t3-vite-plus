@@ -7,6 +7,7 @@ import {
   readFileSync,
   rmSync,
 } from "node:fs";
+import type { AddressInfo } from "node:net";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -195,13 +196,11 @@ function running(groups: number[]) {
 async function freePort() {
   const server = createServer().listen(0, "127.0.0.1");
   await once(server, "listening");
-  const address = server.address();
+  // SAFETY: a server listening on a TCP port reports an AddressInfo; only
+  // pipe and socket servers report a string, and only closed ones null.
+  const { port } = server.address() as AddressInfo;
   server.close();
   await once(server, "close");
 
-  if (address === null || typeof address === "string") {
-    throw new Error("Couldn't find a free port.");
-  }
-
-  return address.port;
+  return port;
 }

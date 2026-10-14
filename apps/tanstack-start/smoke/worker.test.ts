@@ -83,7 +83,7 @@ test("post.byId returns a seeded post", async () => {
   });
 });
 
-function mutate(procedure: string, input: unknown) {
+function mutate(procedure: string, input: string | Record<string, string>) {
   return fetch(new URL(`/api/trpc/${procedure}`, workerUrl), {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -138,9 +138,7 @@ test("better-auth get-session responds", async () => {
 
 test("Discord sign-in returns an authorization URL and writes a verification row", async () => {
   const countVerifications = "SELECT count(*) FROM verification";
-  expect(await queryD1(workerUrl, countVerifications)).toMatchObject({
-    result: [{ results: { rows: [[0]] } }],
-  });
+  expect(await queryD1(workerUrl, countVerifications)).toEqual([[0]]);
 
   const response = await fetch(new URL("/api/auth/sign-in/social", workerUrl), {
     method: "POST",
@@ -165,9 +163,7 @@ test("Discord sign-in returns an authorization URL and writes a verification row
   expect(authorization.searchParams.get("redirect_uri")).toBe(
     `${secrets.WEB_APP_ORIGIN}/api/auth/callback/discord`,
   );
-  expect(await queryD1(workerUrl, countVerifications)).toMatchObject({
-    result: [{ results: { rows: [[1]] } }],
-  });
+  expect(await queryD1(workerUrl, countVerifications)).toEqual([[1]]);
 });
 
 // An empty body is rejected without writing anything, but still counts

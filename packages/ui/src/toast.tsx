@@ -5,6 +5,13 @@ import { Toaster as Sonner, toast } from "sonner";
 
 import { useTheme } from "./theme";
 
+// Sonner's theme variables, set from ours.
+const style: React.CSSProperties & Record<`--${string}`, string> = {
+  "--normal-bg": "var(--popover)",
+  "--normal-text": "var(--popover-foreground)",
+  "--normal-border": "var(--border)",
+};
+
 export const Toaster = ({ ...props }: ToasterProps) => {
   const { themeMode } = useTheme();
 
@@ -12,13 +19,7 @@ export const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={themeMode === "auto" ? "system" : themeMode}
       className="toaster group"
-      style={
-        {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-        } as React.CSSProperties
-      }
+      style={style}
       {...props}
     />
   );
