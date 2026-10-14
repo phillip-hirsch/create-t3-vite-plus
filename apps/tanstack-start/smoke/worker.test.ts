@@ -4,13 +4,14 @@ import { afterEach, expect, test } from "vite-plus/test";
 import { z } from "zod/v4";
 
 import { queryD1 } from "./d1.ts";
+import { secrets } from "./secrets.ts";
 
 // The global setup passes the Workers' URLs and output logs through the
 // environment.
 const {
-  SMOKE_WORKER_URL: worker,
+  SMOKE_WORKER_URL: workerUrl,
   SMOKE_WORKER_LOG: workerLog = "",
-  SMOKE_WORKER_WITHOUT_ORIGIN_URL: workerWithoutOrigin,
+  SMOKE_WORKER_WITHOUT_ORIGIN_URL: workerWithoutOriginUrl,
   SMOKE_WORKER_WITHOUT_ORIGIN_LOG: workerWithoutOriginLog = "",
   // eslint-disable-next-line no-restricted-properties
 } = process.env;
@@ -30,7 +31,7 @@ async function expectStatus(response: Response, status: number) {
 }
 
 test("the home page server-renders", async () => {
-  const response = await fetch(new URL("/", worker));
+  const response = await fetch(new URL("/", workerUrl));
 
   await expectStatus(response, 200);
   expect(response.headers.get("content-type")).toContain("text/html");
@@ -44,7 +45,7 @@ test("the home page server-renders", async () => {
 });
 
 test("post.all returns posts newest first", async () => {
-  const response = await fetch(new URL("/api/trpc/post.all", worker));
+  const response = await fetch(new URL("/api/trpc/post.all", workerUrl));
 
   await expectStatus(response, 200);
   expect(await response.json()).toMatchObject({
@@ -61,7 +62,7 @@ test("post.all returns posts newest first", async () => {
 });
 
 test("post.byId returns a seeded post", async () => {
-  const url = new URL("/api/trpc/post.byId", worker);
+  const url = new URL("/api/trpc/post.byId", workerUrl);
   url.searchParams.set("input", JSON.stringify({ json: { id: "b" } }));
   const response = await fetch(url);
 
@@ -81,7 +82,7 @@ test("post.byId returns a seeded post", async () => {
 });
 
 function mutate(procedure: string, input: unknown) {
-  return fetch(new URL(`/api/trpc/${procedure}`, worker), {
+  return fetch(new URL(`/api/trpc/${procedure}`, workerUrl), {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ json: input }),
@@ -127,7 +128,7 @@ test("production tRPC errors contain no stack trace", async () => {
 });
 
 test("better-auth get-session responds", async () => {
-  const response = await fetch(new URL("/api/auth/get-session", worker));
+  const response = await fetch(new URL("/api/auth/get-session", workerUrl));
 
   await expectStatus(response, 200);
   expect(await response.json()).toBeNull();
@@ -135,11 +136,11 @@ test("better-auth get-session responds", async () => {
 
 test("Discord sign-in returns an authorization URL and writes a verification row", async () => {
   const countVerifications = "SELECT count(*) FROM verification";
-  expect(await queryD1(worker, countVerifications)).toMatchObject({
+  expect(await queryD1(workerUrl, countVerifications)).toMatchObject({
     result: [{ results: { rows: [[0]] } }],
   });
 
-  const response = await fetch(new URL("/api/auth/sign-in/social", worker), {
+  const response = await fetch(new URL("/api/auth/sign-in/social", workerUrl), {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ provider: "discord", callbackURL: "/" }),
@@ -151,12 +152,14 @@ test("Discord sign-in returns an authorization URL and writes a verification row
   expect(authorization.origin + authorization.pathname).toBe(
     "https://discord.com/api/oauth2/authorize",
   );
-  expect(authorization.searchParams.get("client_id")).toBe("smoke-discord-id");
+  expect(authorization.searchParams.get("client_id")).toBe(
+    secrets.AUTH_DISCORD_ID,
+  );
   // Built on the Web app origin that the global setup configures.
   expect(authorization.searchParams.get("redirect_uri")).toBe(
-    "https://smoke.example/api/auth/callback/discord",
+    `${secrets.WEB_APP_ORIGIN}/api/auth/callback/discord`,
   );
-  expect(await queryD1(worker, countVerifications)).toMatchObject({
+  expect(await queryD1(workerUrl, countVerifications)).toMatchObject({
     result: [{ results: { rows: [[1]] } }],
   });
 });
@@ -166,7 +169,7 @@ test("Discord sign-in returns an authorization URL and writes a verification row
 test.each(["expo-authorization-proxy", "oauth-proxy-callback"])(
   "the %s endpoint responds",
   async (endpoint) => {
-    const response = await fetch(new URL(`/api/auth/${endpoint}`, worker));
+    const response = await fetch(new URL(`/api/auth/${endpoint}`, workerUrl));
 
     await expectStatus(response, 400);
     expect(await response.json()).toMatchObject({ code: "VALIDATION_ERROR" });
@@ -175,7 +178,7 @@ test.each(["expo-authorization-proxy", "oauth-proxy-callback"])(
 
 // The same request succeeds on the Worker that has the variable.
 test("without WEB_APP_ORIGIN, the production Worker fails env validation", async () => {
-  const response = await fetch(new URL("/", workerWithoutOrigin));
+  const response = await fetch(new URL("/", workerWithoutOriginUrl));
 
   await expectStatus(response, 500);
   // The response doesn't say why, but the Worker logs the failed validation.

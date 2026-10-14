@@ -14,13 +14,7 @@ import { setTimeout as delay } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 
 import { queryD1 } from "./d1.ts";
-
-const secrets = {
-  AUTH_SECRET: "smoke-test-secret-of-at-least-32-characters",
-  AUTH_DISCORD_ID: "smoke-discord-id",
-  AUTH_DISCORD_SECRET: "smoke-discord-secret",
-  WEB_APP_ORIGIN: "https://smoke.example",
-};
+import { secrets } from "./secrets.ts";
 
 // The app directory: `vp test` can run from the repository root too.
 const app = fileURLToPath(new URL("..", import.meta.url));
