@@ -29,6 +29,7 @@
     "ios": "expo run:ios"
   },
   "devDependencies": {
+    "@oxlint/plugins": "catalog:",
     "@types/node": "catalog:",
     "dotenv-cli": "^10.0.0",
     "typescript": "catalog:",
