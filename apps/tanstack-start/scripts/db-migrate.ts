@@ -41,7 +41,7 @@ cf.stdout.setEncoding("utf8").on("data", (chunk: string) => {
   output += chunk;
   const result = parse(output);
   if (result === undefined) return;
-  const problem = failure(result);
+  const problem = failureMessage(result);
   if (problem) console.error(problem);
   applied = !problem;
   setTimeout(() => (stopped = cf.kill()), 1000).unref();
@@ -73,6 +73,9 @@ interface Migration {
   status: string;
 }
 
+// The status `cf d1 migrations apply` reports for an applied migration.
+const appliedStatus = "✅";
+
 // The complete result, or `undefined` while cf is still printing it.
 function parse(text: string): unknown {
   try {
@@ -83,11 +86,11 @@ function parse(text: string): unknown {
 }
 
 // Why the result doesn't count as applied, if it doesn't.
-function failure(result: unknown) {
+function failureMessage(result: unknown) {
   if (!Array.isArray(result) || !result.every(isMigration)) {
     return "cf printed a result this script doesn't understand.";
   }
-  const failed = result.filter((row) => row.status !== "✅");
+  const failed = result.filter((row) => row.status !== appliedStatus);
   if (failed.length > 0) {
     return `Failed to apply ${failed.map((row) => row.name).join(", ")}.`;
   }
