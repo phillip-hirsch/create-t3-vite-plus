@@ -10,10 +10,16 @@ const {
   // eslint-disable-next-line no-restricted-properties
 } = process.env;
 
+// Shows the body when the status is wrong, so that the failure explains itself.
+async function expectStatus(response: Response, status: number) {
+  const body = await response.clone().text();
+  expect(response.status, `${response.status} ${body}`).toBe(status);
+}
+
 test("the home page server-renders", async () => {
   const response = await fetch(new URL("/", worker));
 
-  expect(response.status).toBe(200);
+  await expectStatus(response, 200);
   expect(response.headers.get("content-type")).toContain("text/html");
   // A seeded post, so the page rendered with data from D1. The hydration
   // scripts carry the posts too, so only the markup outside them counts.
@@ -27,7 +33,7 @@ test("the home page server-renders", async () => {
 test("post.all returns posts newest first", async () => {
   const response = await fetch(new URL("/api/trpc/post.all", worker));
 
-  expect(response.status).toBe(200);
+  await expectStatus(response, 200);
   expect(await response.json()).toMatchObject({
     result: {
       data: {
@@ -46,7 +52,7 @@ test("post.byId returns a seeded post", async () => {
   url.searchParams.set("input", JSON.stringify({ json: { id: "b" } }));
   const response = await fetch(url);
 
-  expect(response.status).toBe(200);
+  await expectStatus(response, 200);
   expect(await response.json()).toMatchObject({
     result: {
       data: {
@@ -72,13 +78,13 @@ function mutate(procedure: string, input: unknown) {
 test("post.create returns 401 without a session", async () => {
   const response = await mutate("post.create", { title: "New", content: "-" });
 
-  expect(response.status).toBe(401);
+  await expectStatus(response, 401);
 });
 
 test("post.delete returns 401 without a session", async () => {
   const response = await mutate("post.delete", "a");
 
-  expect(response.status).toBe(401);
+  await expectStatus(response, 401);
 });
 
 test("production tRPC errors contain no stack trace", async () => {
@@ -94,7 +100,7 @@ test("production tRPC errors contain no stack trace", async () => {
 test("better-auth get-session responds", async () => {
   const response = await fetch(new URL("/api/auth/get-session", worker));
 
-  expect(response.status).toBe(200);
+  await expectStatus(response, 200);
   expect(await response.json()).toBeNull();
 });
 
@@ -110,7 +116,7 @@ test("Discord sign-in returns an authorization URL and writes a verification row
     body: JSON.stringify({ provider: "discord", callbackURL: "/" }),
   });
 
-  expect(response.status).toBe(200);
+  await expectStatus(response, 200);
   const { url } = z.object({ url: z.url() }).parse(await response.json());
   const authorization = new URL(url);
   expect(authorization.origin + authorization.pathname).toBe(
@@ -133,7 +139,7 @@ test.each(["expo-authorization-proxy", "oauth-proxy-callback"])(
   async (endpoint) => {
     const response = await fetch(new URL(`/api/auth/${endpoint}`, worker));
 
-    expect(response.status).toBe(400);
+    await expectStatus(response, 400);
     expect(await response.json()).toMatchObject({ code: "VALIDATION_ERROR" });
   },
 );
@@ -142,5 +148,5 @@ test.each(["expo-authorization-proxy", "oauth-proxy-callback"])(
 test("without WEB_APP_ORIGIN, the production Worker fails env validation", async () => {
   const response = await fetch(new URL("/", workerWithoutOrigin));
 
-  expect(response.status).toBe(500);
+  await expectStatus(response, 500);
 });
