@@ -6,6 +6,11 @@ import { defineConfig, lazyPlugins } from "vite-plus";
 
 import { typecheck } from "@acme/tsconfig/typecheck";
 
+// The smoke suite sets this to preview against its own local state, and
+// without the inspector: previews that start together can pick the same free
+// port for it, and then the one that loses answers every request with a 500.
+const smokeStateDir = process.env.SMOKE_STATE_DIR;
+
 export default defineConfig({
   resolve: {
     tsconfigPaths: true,
@@ -19,13 +24,8 @@ export default defineConfig({
   plugins: lazyPlugins(() => [
     cloudflare({
       viteEnvironment: { name: "ssr" },
-      // The smoke suite previews against its own local state, and without the
-      // inspector: previews that start together can pick the same free port
-      // for it, and then the one that loses answers every request with a 500.
-      persistState: {
-        path: process.env.SMOKE_STATE_DIR ?? ".cloudflare/state",
-      },
-      inspectorPort: process.env.SMOKE_STATE_DIR ? false : undefined,
+      persistState: { path: smokeStateDir ?? ".cloudflare/state" },
+      inspectorPort: smokeStateDir ? false : undefined,
     }),
     tanstackStart(),
     viteReact(),
