@@ -17,7 +17,8 @@ export default defineConfig({
       // better-auth reads NODE_ENV from process.env as its modules load, and
       // Vite can't inline that read. Without it, better-auth turns off its
       // production defaults, like rate limiting. Vite sets NODE_ENV for the
-      // bundle before it loads this file, whatever the mode.
+      // bundle before it loads this file, whatever the mode. It reads
+      // `.env.<mode>` files later, so set NODE_ENV on the command, not there.
       ...(process.env.NODE_ENV === "production" && {
         NODE_ENV: bindings.text("production"),
       }),
