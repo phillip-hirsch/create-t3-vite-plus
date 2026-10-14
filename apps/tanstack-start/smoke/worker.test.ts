@@ -1,18 +1,27 @@
 import { readFileSync } from "node:fs";
 
-import { expect, test } from "vite-plus/test";
+import { afterEach, expect, test } from "vite-plus/test";
 import { z } from "zod/v4";
 
 import { queryD1 } from "./d1.ts";
 
-// The global setup passes the Workers' URLs, and the output of the Worker
-// without WEB_APP_ORIGIN, through the environment.
+// The global setup passes the Workers' URLs and output logs through the
+// environment.
 const {
   SMOKE_WORKER_URL: worker,
+  SMOKE_WORKER_LOG: workerLog = "",
   SMOKE_WORKER_WITHOUT_ORIGIN_URL: workerWithoutOrigin,
   SMOKE_WORKER_WITHOUT_ORIGIN_LOG: workerWithoutOriginLog = "",
   // eslint-disable-next-line no-restricted-properties
 } = process.env;
+
+// A wrong response usually comes with an error in the Worker's output, which
+// the teardown deletes.
+afterEach(({ task }) => {
+  if (task.result?.state === "fail") {
+    console.error(`Worker output:\n${readFileSync(workerLog, "utf8")}`);
+  }
+});
 
 // Shows the body when the status is wrong, so that the failure explains itself.
 async function expectStatus(response: Response, status: number) {
@@ -93,8 +102,9 @@ test("post.delete returns 401 without a session", async () => {
 
 test("production tRPC errors contain no stack trace", async () => {
   const response = await mutate("post.create", { title: "New", content: "-" });
-  const error: unknown = await response.json();
 
+  await expectStatus(response, 401);
+  const error: unknown = await response.json();
   expect(error).toMatchObject({
     error: { json: { data: { code: "UNAUTHORIZED" } } },
   });

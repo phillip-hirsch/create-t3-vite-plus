@@ -67,6 +67,7 @@ export default async function setup() {
     // eslint-disable-next-line no-restricted-properties
     Object.assign(process.env, {
       SMOKE_WORKER_URL: worker,
+      SMOKE_WORKER_LOG: log,
       SMOKE_WORKER_WITHOUT_ORIGIN_URL: workerWithoutOrigin,
       SMOKE_WORKER_WITHOUT_ORIGIN_LOG: withoutOriginLog,
     });
