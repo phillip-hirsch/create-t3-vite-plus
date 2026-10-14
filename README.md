@@ -84,7 +84,16 @@ vp run db:migrate
 
 Run `vp run dev` to start the web app at `http://localhost:3000`. The mobile app uses the same port for API requests. Start it with `vp run dev:expo` in a second terminal, so Expo's keyboard shortcuts and QR code get their own terminal.
 
+To use another port, set `WEB_APP_PORT` in `.env`. `vp run dev`, the web app's `preview` script and the mobile app's API requests all use it, so restart the web app and Expo after you change it. The scripts load `.env` themselves, so a bare `vp exec expo start` or `vp preview` doesn't see it.
+
 `vp run dev` warns about a missing `WEB_APP_ORIGIN` secret until you set one. You can ignore the warning in dev.
+
+`vp install` also generates the Worker's TypeScript types from [`cloudflare.config.ts`](./apps/tanstack-start/cloudflare.config.ts) into `apps/tanstack-start/.cloudflare/types`, which Git ignores. It needs no Cloudflare account. When the dependencies are already up to date, `vp install` skips that step, so after you change `cloudflare.config.ts`, regenerate the types yourself:
+
+```bash
+cd apps/tanstack-start
+vp exec cf workers types
+```
 
 ### 2. Database
 
@@ -100,7 +109,7 @@ vp run db:generate
 vp run db:migrate
 ```
 
-To browse the local data, open the Local Explorer at `http://localhost:3000/cdn-cgi/local/explorer` while `vp run dev` is running. The starter doesn't include Drizzle Studio, because it can't read D1 without an API token or extra setup.
+To browse the local data, open the Local Explorer at `http://localhost:3000/cdn-cgi/local/explorer` (or your `WEB_APP_PORT`) while `vp run dev` is running. The starter doesn't include Drizzle Studio, because it can't read D1 without an API token or extra setup.
 
 [Deployment](#deployment) covers the production database.
 
@@ -140,10 +149,10 @@ For more information about the Better Auth CLI, see the [official documentation]
 
 1. Make sure you have XCode and XCommand Line Tools installed [as shown on expo docs](https://docs.expo.dev/workflow/ios-simulator).
 
-   > **NOTE:** If you just installed XCode, or if you have updated it, you need to open the simulator manually once. Run `vp exec expo start` from `apps/expo`, and then enter `I` to launch Expo Go. After the manual launch, you can run `vp run dev:expo` in the root directory.
+   > **NOTE:** If you just installed XCode, or if you have updated it, you need to open the simulator manually once. Before you change the script, run `vp run dev:expo` in the root directory and enter `I` to launch Expo Go.
 
    ```diff
-   +  "dev": "expo start --ios",
+   +  "dev": "dotenv -e ../../.env -- expo start --ios",
    ```
 
 2. Run `vp run dev:expo` at the project root folder.
@@ -155,7 +164,7 @@ For more information about the Better Auth CLI, see the [official documentation]
 2. Change the `dev` script at `apps/expo/package.json` to open the Android emulator.
 
    ```diff
-   +  "dev": "expo start --android",
+   +  "dev": "dotenv -e ../../.env -- expo start --android",
    ```
 
 3. Run `vp run dev:expo` at the project root folder.
