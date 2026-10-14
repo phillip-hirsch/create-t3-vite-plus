@@ -1,3 +1,5 @@
+Before writing or reviewing code, read `CODING_STANDARDS.md`: judgement calls that lint can't enforce, such as proving env-dependent behaviour against the built Worker.
+
 ## Agent skills
 
 ### Issue tracker
