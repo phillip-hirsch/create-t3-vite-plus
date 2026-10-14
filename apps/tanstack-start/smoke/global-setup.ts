@@ -40,7 +40,6 @@ export default async function setup() {
     const stateDir = join(dir, "with-origin");
     const log = join(dir, "with-origin.log");
     await migrate(groups, stateDir, log);
-    // One at a time: previews that start together race for the inspector port.
     const worker = await preview(groups, log, {
       ...secrets,
       SMOKE_STATE_DIR: stateDir,
