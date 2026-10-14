@@ -93,7 +93,7 @@ test("post.delete returns 401 without a session", async () => {
 
 test("production tRPC errors contain no stack trace", async () => {
   const response = await mutate("post.create", { title: "New", content: "-" });
-  const error = await response.json();
+  const error: unknown = await response.json();
 
   expect(error).toMatchObject({
     error: { json: { data: { code: "UNAUTHORIZED" } } },
