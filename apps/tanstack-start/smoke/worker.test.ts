@@ -100,6 +100,21 @@ test("post.delete returns 401 without a session", async () => {
   await expectStatus(response, 401);
 });
 
+// A rejected mutation leaves its request body unread. Miniflare 5.20261006
+// then reuses a connection that workerd has already closed, and the next
+// request fails (cloudflare/workers-sdk#16199), so one pair of requests
+// isn't enough to catch it.
+test("consecutive unauthenticated mutations all return 401", async () => {
+  for (let i = 0; i < 20; i++) {
+    const response = await mutate("post.create", {
+      title: "New",
+      content: "-",
+    });
+
+    await expectStatus(response, 401);
+  }
+});
+
 test("production tRPC errors contain no stack trace", async () => {
   const response = await mutate("post.create", { title: "New", content: "-" });
 
