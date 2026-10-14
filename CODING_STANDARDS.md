@@ -27,7 +27,7 @@ The simplest change that meets the issue wins. When a hunk could be shorter, or 
 
 ## Run tools through Vite+ and pnpm
 
-Commands in scripts, docs and CI go through `vp` (`vp run`, `vp dlx`, `vp test`), with pnpm as the package manager behind it ([ADR 0001](docs/adr/0001-vite-plus-replaces-turborepo.md)). A `yarn` or `npx` command is a finding.
+Repo tasks, package scripts, one-off packages and installs run through `vp` (`vp run`, `vp dlx`, `vp install`), with pnpm as the package manager behind it ([ADR 0001](docs/adr/0001-vite-plus-replaces-turborepo.md)), and `yarn` or `npx` for any of them is a finding. Calling a tool's own CLI directly, such as `node`, `expo`, `git` or `cf`, is fine.
 
 ## Use the `cf` CLI for Cloudflare
 
