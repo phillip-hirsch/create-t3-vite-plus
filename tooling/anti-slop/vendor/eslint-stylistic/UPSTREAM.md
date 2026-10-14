@@ -23,6 +23,6 @@ The opinionated policy lives outside this directory in `../../rules/require-read
 
 ## Updating and verification
 
-Fetch an explicit upstream revision, compare the original rule and types against this revision, and port relevant fixes while retaining the adapters above. Update this record and preserve the license. Run `pnpm check` and `pnpm sync:skill-assets` as required by repository guidance.
+Fetch an explicit upstream revision, compare the original rule and types against this revision, and port relevant fixes while retaining the adapters above. Update this record and preserve the license. Then run the repository's checks: `vp lint`, `vp fmt --check` and `vp run typecheck`.
 
-Focused Oxlint RuleTester cases live in `../../rules/require-readable-spacing.test.ts`; they test exact fixes, JSDoc/trailing comments, same-line statements, semicolon-free code, TypeScript exports/overloads, Effect-style generators, and upstream removal behavior. `../../rules/require-readable-spacing-cli.test.ts` verifies the exported plugin through the native Oxlint CLI on multiple files, including rejection, autofix, and repeated-fix stability. The complete upstream JS/TS test suites have not been ported; this is focused compatibility evidence, not a claim of full upstream conformance.
+anti-slop's focused RuleTester and Oxlint CLI tests for `require-readable-spacing` were not vendored into this repository; they live upstream in `src/rules/require-readable-spacing.test.ts` and `src/rules/require-readable-spacing-cli.test.ts`. The complete ESLint Stylistic JS/TS test suites have not been ported either, so this is not a claim of full upstream conformance.

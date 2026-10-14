@@ -166,9 +166,13 @@ function aliasSubstitution(
 	const arguments_ = type.typeArguments?.params ?? [];
 	const next = new Map(base);
 	for (const [index, parameter] of parameters.entries()) {
-		const argument = arguments_[index] ?? parameter.default;
+		const explicitArgument = arguments_[index];
+		const argument = explicitArgument ?? parameter.default;
 		if (argument === null || argument === undefined) return null;
-		next.set(parameter.name.name, resolvedSubstitutionArgument(argument, next));
+		// Explicit arguments are written in the caller's scope; defaults can refer
+		// to this alias's earlier parameters.
+		const argumentScope = explicitArgument === undefined ? next : base;
+		next.set(parameter.name.name, resolvedSubstitutionArgument(argument, argumentScope));
 	}
 	return next;
 }
