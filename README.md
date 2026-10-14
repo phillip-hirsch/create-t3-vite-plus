@@ -88,6 +88,13 @@ To use another port, set `WEB_APP_PORT` in `.env`. `vp run dev`, the web app's `
 
 `vp run dev` warns about a missing `WEB_APP_ORIGIN` secret until you set one. You can ignore the warning in dev.
 
+`vp install` also generates the Worker's TypeScript types from [`cloudflare.config.ts`](./apps/tanstack-start/cloudflare.config.ts) into `apps/tanstack-start/.cloudflare/types`, which Git ignores. It needs no Cloudflare account. When the dependencies are already up to date, `vp install` skips that step, so after you change `cloudflare.config.ts`, regenerate the types yourself:
+
+```bash
+cd apps/tanstack-start
+vp exec cf workers types
+```
+
 ### 2. Database
 
 The [db](./packages/db) package uses [Drizzle](https://orm.drizzle.team) with [Cloudflare D1](https://developers.cloudflare.com/d1), a SQLite database. The web app reaches it through its `DB` binding, so there is no connection string to configure. In dev the database is a local file under `apps/tanstack-start/.cloudflare/state`. `vp run db:migrate` creates its tables from the SQL files in [`packages/db/migrations`](./packages/db/migrations).
