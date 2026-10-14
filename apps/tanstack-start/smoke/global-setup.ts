@@ -1,13 +1,16 @@
-import type { ChildProcess } from "node:child_process";
-import { execFile, spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { once } from "node:events";
-import { rmSync } from "node:fs";
-import { mkdtemp, rm } from "node:fs/promises";
+import {
+  closeSync,
+  mkdtempSync,
+  openSync,
+  readFileSync,
+  rmSync,
+} from "node:fs";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
-import { promisify } from "node:util";
 
 import { queryD1 } from "./d1.ts";
 
@@ -21,32 +24,36 @@ const secrets = {
 // Runs the built Worker in workerd against a new local D1 database, and a
 // second one without WEB_APP_ORIGIN. Returns the teardown.
 export default async function setup() {
-  const stateDir = await mkdtemp(join(tmpdir(), "acme-smoke-"));
-  const previews: ChildProcess[] = [];
-  // Vitest exits without calling the teardown when it's interrupted.
-  const stopOnExit = () => {
-    for (const child of previews) signalGroup(child, "SIGTERM");
-    rmSync(stateDir, { recursive: true, force: true });
+  const dir = mkdtempSync(join(tmpdir(), "acme-smoke-"));
+  // The process groups of everything the setup starts.
+  const groups: number[] = [];
+  // Synchronous, so that it can also run as the process exits: Vitest doesn't
+  // call the teardown when it's interrupted.
+  const teardown = () => {
+    process.off("exit", teardown);
+    stop(groups);
+    rmSync(dir, { recursive: true, force: true });
   };
-  process.once("exit", stopOnExit);
-  const teardown = async () => {
-    process.off("exit", stopOnExit);
-    await Promise.all(previews.map(stop));
-    await rm(stateDir, { recursive: true, force: true });
-  };
+  process.once("exit", teardown);
 
   try {
-    await migrate(stateDir);
+    const stateDir = join(dir, "with-origin");
+    const log = join(dir, "with-origin.log");
+    await migrate(groups, stateDir, log);
     // One at a time: previews that start together race for the inspector port.
-    const worker = await preview(previews, {
+    const worker = await preview(groups, log, {
       ...secrets,
       SMOKE_STATE_DIR: stateDir,
     });
-    const workerWithoutOrigin = await preview(previews, {
-      ...secrets,
-      WEB_APP_ORIGIN: undefined,
-      SMOKE_STATE_DIR: join(stateDir, "without-origin"),
-    });
+    const workerWithoutOrigin = await preview(
+      groups,
+      join(dir, "without-origin.log"),
+      {
+        ...secrets,
+        WEB_APP_ORIGIN: undefined,
+        SMOKE_STATE_DIR: join(dir, "without-origin"),
+      },
+    );
     // Neither the ids nor the insert order follow the creation times.
     await queryD1(
       worker,
@@ -63,16 +70,37 @@ export default async function setup() {
       SMOKE_WORKER_WITHOUT_ORIGIN_URL: workerWithoutOrigin,
     });
   } catch (error) {
-    await teardown();
+    teardown();
     throw error;
   }
   return teardown;
 }
 
+// Starts `vp` in its own process group, because stopping `vp` alone orphans
+// what it started. Its output goes to the log, which is shown when the
+// command fails.
+function start(
+  groups: number[],
+  log: string,
+  args: string[],
+  env?: Record<string, string | undefined>,
+) {
+  const output = openSync(log, "a");
+  const child = spawn("vp", args, {
+    detached: true,
+    // eslint-disable-next-line no-restricted-properties
+    env: { ...process.env, ...env },
+    stdio: ["ignore", output, output],
+  });
+  closeSync(output);
+  if (child.pid !== undefined) groups.push(child.pid);
+  return child;
+}
+
 // `vp exec` puts the local `cf` on the path. The wrapper script stops `cf`,
 // which doesn't exit by itself after a local migration.
-async function migrate(stateDir: string) {
-  await promisify(execFile)("vp", [
+async function migrate(groups: number[], stateDir: string, log: string) {
+  const child = start(groups, log, [
     "exec",
     "node",
     "scripts/db-migrate.ts",
@@ -81,31 +109,26 @@ async function migrate(stateDir: string) {
     stateDir,
     "--quiet",
   ]);
+  await once(child, "exit");
+  if (child.exitCode !== 0) {
+    throw new Error(`The migration failed:\n${readFileSync(log, "utf8")}`);
+  }
 }
 
 // Starts `vp preview` on a free port and resolves with its URL once it serves.
 async function preview(
-  previews: ChildProcess[],
+  groups: number[],
+  log: string,
   env: Record<string, string | undefined>,
 ) {
   const port = await freePort();
   const url = `http://127.0.0.1:${port}`;
-  const child = spawn(
-    "vp",
+  const child = start(
+    groups,
+    log,
     ["preview", "--host", "127.0.0.1", "--port", `${port}`, "--strictPort"],
-    {
-      // Its own process group, because stopping `vp` alone orphans workerd.
-      detached: true,
-      // eslint-disable-next-line no-restricted-properties
-      env: { ...process.env, ...env },
-      stdio: ["ignore", "pipe", "pipe"],
-    },
+    env,
   );
-  previews.push(child);
-  // Only shown when the preview doesn't start.
-  let output = "";
-  child.stdout.on("data", (chunk: Buffer) => (output += chunk.toString()));
-  child.stderr.on("data", (chunk: Buffer) => (output += chunk.toString()));
 
   const timeout = AbortSignal.timeout(60_000);
   while (child.exitCode === null && !timeout.aborted) {
@@ -116,26 +139,40 @@ async function preview(
       await delay(100);
     }
   }
-  throw new Error(`vp preview didn't start:\n${output}`);
+  throw new Error(`vp preview didn't start:\n${readFileSync(log, "utf8")}`);
 }
 
-// Stops a preview and waits until its whole process group is gone.
-async function stop(child: ChildProcess) {
-  const patience = AbortSignal.timeout(5000);
-  signalGroup(child, "SIGTERM");
-  // Signal 0 only checks that the group still has a process.
-  while (signalGroup(child, patience.aborted ? "SIGKILL" : 0)) {
-    await delay(50);
+// Stops the process groups and waits until nothing in them is running: a
+// process that outlives the state directory creates it again.
+function stop(groups: number[]) {
+  signal(groups, "SIGTERM");
+  const patience = Date.now() + 5000;
+  while (running(groups)) {
+    if (Date.now() > patience) signal(groups, "SIGKILL");
+    Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 50);
   }
 }
 
-// Returns false once no process is left in the preview's group.
-function signalGroup(child: ChildProcess, signal: NodeJS.Signals | 0) {
-  try {
-    return child.pid !== undefined && process.kill(-child.pid, signal);
-  } catch {
-    return false;
+function signal(groups: number[], name: NodeJS.Signals) {
+  for (const group of groups) {
+    try {
+      process.kill(-group, name);
+    } catch {
+      // The group is already gone.
+    }
   }
+}
+
+// Asks `ps` instead of sending signal 0: a stopped group leader stays a zombie
+// until this process reaps it, which it can't do while it's exiting.
+function running(groups: number[]) {
+  const { stdout } = spawnSync("ps", ["-A", "-o", "pgid=", "-o", "stat="], {
+    encoding: "utf8",
+  });
+  return stdout.split("\n").some((line) => {
+    const [group, state] = line.trim().split(/\s+/);
+    return groups.includes(Number(group)) && !state?.startsWith("Z");
+  });
 }
 
 async function freePort() {
