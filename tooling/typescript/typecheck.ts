@@ -17,7 +17,10 @@ export const typecheck = {
       workspace("!**/node_modules/**"),
       // tsc rewrites its own build info, which would block caching.
       workspace("!**/.cache/**"),
-      workspace("!**/{.cloudflare,.wrangler}/**"),
+      // The web app compiles in the generated `.cloudflare/types`, but not the
+      // build output and local state next to them, which change on every run.
+      workspace("!**/.cloudflare/{output,state}/**"),
+      workspace("!**/.wrangler/**"),
     ],
   },
 };
