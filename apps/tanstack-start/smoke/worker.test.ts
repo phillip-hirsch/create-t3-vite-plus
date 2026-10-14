@@ -164,6 +164,17 @@ test("Discord sign-in returns an authorization URL and writes a verification row
   });
 });
 
+// In development, better-auth renders its own error page instead.
+test("the better-auth error page redirects to the app in production", async () => {
+  const response = await fetch(
+    new URL("/api/auth/error?error=smoke_probe", workerUrl),
+    { redirect: "manual" },
+  );
+
+  await expectStatus(response, 302);
+  expect(response.headers.get("location")).toBe("/?error=smoke_probe");
+});
+
 // Each plugin's route rejects a request without its query parameters. Without
 // the plugin, the route would be a 404.
 test.each(["expo-authorization-proxy", "oauth-proxy-callback"])(

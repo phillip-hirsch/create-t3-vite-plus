@@ -2,7 +2,8 @@ import { spawn } from "node:child_process";
 
 import config from "../cloudflare.config.ts";
 
-const { id } = config.worker.env.DB;
+// The DB binding is the same in every mode.
+const { id } = config({ mode: undefined, isPreview: false }).worker.env.DB;
 if (!id) {
   throw new Error("The DB binding in cloudflare.config.ts needs an id.");
 }
