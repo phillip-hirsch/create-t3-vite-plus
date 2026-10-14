@@ -24,7 +24,7 @@ export const auth = initAuth({
   // schema mismatch" for the stub, which is expected.
   db: {},
   baseUrl: "http://localhost:3000",
-  productionUrl: "http://localhost:3000",
+  webAppOrigin: "http://localhost:3000",
   secret: "secret",
   discordClientId: "1234567890",
   discordClientSecret: "1234567890",

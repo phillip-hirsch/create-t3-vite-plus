@@ -11,7 +11,7 @@ const baseUrl = getBaseUrl();
 export const auth = initAuth({
   db,
   baseUrl,
-  productionUrl: env.WEB_APP_ORIGIN ?? baseUrl,
+  webAppOrigin: env.WEB_APP_ORIGIN ?? baseUrl,
   secret: env.AUTH_SECRET,
   discordClientId: env.AUTH_DISCORD_ID,
   discordClientSecret: env.AUTH_DISCORD_SECRET,

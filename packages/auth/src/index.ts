@@ -7,7 +7,7 @@ import { oAuthProxy } from "better-auth/plugins";
 export function initAuth(options: {
   db: Parameters<typeof drizzleAdapter>[0];
   baseUrl: string;
-  productionUrl: string;
+  webAppOrigin: string;
   secret: string | undefined;
 
   discordClientId: string;
@@ -22,7 +22,7 @@ export function initAuth(options: {
     secret: options.secret,
     plugins: [
       oAuthProxy({
-        productionURL: options.productionUrl,
+        productionURL: options.webAppOrigin,
       }),
       expo(),
       ...(options.extraPlugins ?? []),
@@ -31,7 +31,7 @@ export function initAuth(options: {
       discord: {
         clientId: options.discordClientId,
         clientSecret: options.discordClientSecret,
-        redirectURI: `${options.productionUrl}/api/auth/callback/discord`,
+        redirectURI: `${options.webAppOrigin}/api/auth/callback/discord`,
       },
     },
     trustedOrigins: ["expo://"],
