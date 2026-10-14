@@ -19,7 +19,10 @@ Why: in the built Worker, `process.env` holds only the Worker's bindings. Vite i
 
 ## Keep types precise
 
-Lint bans explicit `any`. The judgement call is the escape hatches: a lint-disable comment for it, a cast through `unknown`, or a type widened to `unknown` or `Record<string, unknown>` where a precise type exists. Each one needs a comment saying why no precise type works.
+Lint rejects `any`, `unknown` contracts, loose dictionaries and casts without a `SAFETY:` comment. What it can't judge is whether the escape hatch was needed. In a diff, look for:
+
+- a `SAFETY:` comment whose invariant the code doesn't guarantee, or a cast that a precise type, or a parser at the I/O boundary, would remove;
+- a lint-disable comment for a type rule that doesn't say why no precise type works.
 
 ## Choose the simplest change
 
