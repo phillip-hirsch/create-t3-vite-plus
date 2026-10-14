@@ -22,8 +22,9 @@ files: change rules to fit the project and record deviations below.
   arguments in the caller's scope instead of the alias's own, as
   `aliasSubstitutions` in `shared/type-alias-resolution.ts` does. Before,
   `type Wrap<T> = Pair<unknown, T>` with `type Pair<T, U> = Record<string, U>`
-  made `Wrap<string>` an `unknown` dictionary in `no-unsafe-dictionary-type`
-  and `no-known-value-widening`.
+  made `Wrap<string>` an `unknown` dictionary in `no-unsafe-dictionary-type`.
+  `no-known-value-widening` uses the same helper for `Record` keys, so it
+  missed a `string` key passed the same way.
 - `vendor/eslint-stylistic/UPSTREAM.md` names this repository's checks, and
   says the rule tests weren't vendored.
 
