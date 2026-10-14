@@ -4,10 +4,10 @@ Judgement calls for writing and reviewing changes. `vp lint` and `vp fmt` enforc
 
 ## Prove env-dependent behaviour against the built Worker
 
-Any behaviour that depends on runtime mode or env, in our code or a dependency's, has to be shown working against the web app's built Worker, not only under `vp dev`. Proof is either of:
+Any behaviour that depends on runtime mode or env, in our code or a dependency's, has to be shown working against the web app's built Worker, not only under `vp dev`. Proof, against a fresh `vp build` of the change, is either of:
 
-- a test in the smoke suite (`apps/tanstack-start/smoke/`), which runs `vp preview` on the production build;
-- a `vp preview` check of a production build, recorded in the PR description.
+- a test in the smoke suite (`apps/tanstack-start/smoke/`), which runs `vp preview` on that build;
+- a `vp preview` check, recorded in the PR description.
 
 In a diff, look for:
 
@@ -15,7 +15,7 @@ In a diff, look for:
 - a dependency added or upgraded whose behaviour switches on mode or env, such as auth, logging, error pages or rate limiting;
 - changes to the bindings in `cloudflare.config.ts` or to build-mode config.
 
-Why: in the built Worker, `process.env` holds only the Worker's bindings. Vite inlines the env reads it can see at build time, but a dependency that reads env at runtime gets only the bindings. `vp dev` can't reveal the gap, because it runs in development mode, where development defaults are correct. On PR #19, better-auth read `NODE_ENV` this way and left its production defaults, such as rate limiting, switched off. The implementer, three audit rounds and both `/code-review` reviewers missed it, because every check ran under `vp dev`. [ADR 0002](docs/adr/0002-cloudflare-workers-and-d1.md) records the fix.
+Why: in the built Worker, `process.env` holds only the Worker's bindings. Vite inlines the env reads it can see at build time, but a dependency that reads env at runtime gets only the bindings. `vp dev` can't reveal the gap, because it runs in development mode, where development defaults are correct. On PR #19, the implementer, three audit rounds and both `/code-review` reviewers missed one such read, because every check ran under `vp dev`. [ADR 0002](docs/adr/0002-cloudflare-workers-and-d1.md) records it and the fix.
 
 ## Keep types precise
 
