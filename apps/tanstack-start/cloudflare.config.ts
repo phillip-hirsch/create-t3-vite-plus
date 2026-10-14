@@ -1,6 +1,6 @@
 import { bindings, defineConfig } from "cf/config";
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   worker: {
     name: "acme-tanstack-start",
     entrypoint: "@tanstack/react-start/server-entry",
@@ -16,8 +16,11 @@ export default defineConfig(({ mode }) => ({
       WEB_APP_ORIGIN: bindings.secret(),
       // better-auth reads NODE_ENV from process.env as its modules load, and
       // Vite can't inline that read. Without it, better-auth turns off its
-      // production defaults, like rate limiting.
-      ...(mode === "production" && { NODE_ENV: bindings.text("production") }),
+      // production defaults, like rate limiting. Vite sets NODE_ENV for the
+      // bundle before it loads this file, whatever the mode.
+      ...(process.env.NODE_ENV === "production" && {
+        NODE_ENV: bindings.text("production"),
+      }),
     },
   },
-}));
+});

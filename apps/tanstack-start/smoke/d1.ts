@@ -7,8 +7,7 @@ export async function queryD1(
   workerUrl: string | undefined,
   sql: string,
 ): Promise<unknown> {
-  // The DB binding is the same in every mode.
-  const { id } = config({ mode: undefined, isPreview: false }).worker.env.DB;
+  const { id } = config.worker.env.DB;
   const response = await fetch(
     new URL(`/cdn-cgi/local/explorer/api/d1/database/${id}/raw`, workerUrl),
     {
