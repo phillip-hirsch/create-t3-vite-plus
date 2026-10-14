@@ -30,8 +30,8 @@ It uses [Vite+](https://viteplus.dev) and contains:
   └─ Recommended extensions and settings for VSCode users
 apps
   ├─ expo
-  │   ├─ Expo SDK 54
-  │   ├─ React Native 0.81 using React 19
+  │   ├─ Expo SDK 57
+  │   ├─ React Native 0.86 using React 19
   │   ├─ Navigation using Expo Router
   │   ├─ Tailwind CSS v4 using NativeWind v5
   │   └─ Typesafe API calls using tRPC
