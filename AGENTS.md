@@ -1,3 +1,7 @@
+## Checks
+
+Run `vp run verify` to check your work. CI and the pre-push hook run the same script, so new checks go in it.
+
 ## Agent skills
 
 ### Issue tracker
