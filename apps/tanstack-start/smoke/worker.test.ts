@@ -147,6 +147,10 @@ test("Discord sign-in returns an authorization URL and writes a verification row
   });
 
   await expectStatus(response, 200);
+  // Secure, because the base URL is the Web app origin rather than localhost.
+  expect(response.headers.getSetCookie()).toContainEqual(
+    expect.stringMatching(/^__Secure-better-auth\.state=.*; Secure(;|$)/),
+  );
   const { url } = z.object({ url: z.url() }).parse(await response.json());
   const authorization = new URL(url);
   expect(authorization.origin + authorization.pathname).toBe(
