@@ -22,6 +22,7 @@ Why: in the built Worker, `process.env` holds only the Worker's bindings. Vite i
 Lint rejects `any`, `unknown` contracts, loose dictionaries and casts without a `SAFETY:` comment. What it can't judge is whether the escape hatch was needed. In a diff, look for:
 
 - a `SAFETY:` comment whose invariant the code doesn't guarantee, or a cast that a precise type, or a parser at the I/O boundary, would remove;
+- a value whose type is known, such as a call result, stored or passed as `unknown`, `object` or a loose dictionary; lint only catches this for literals;
 - a lint-disable comment for a type rule that doesn't say why no precise type works.
 
 ## Choose the simplest change
