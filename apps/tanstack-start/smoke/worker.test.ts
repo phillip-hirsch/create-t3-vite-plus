@@ -1,12 +1,16 @@
+import { readFileSync } from "node:fs";
+
 import { expect, test } from "vite-plus/test";
 import { z } from "zod/v4";
 
 import { queryD1 } from "./d1.ts";
 
-// The global setup passes the Workers' URLs through the environment.
+// The global setup passes the Workers' URLs, and the output of the Worker
+// without WEB_APP_ORIGIN, through the environment.
 const {
   SMOKE_WORKER_URL: worker,
   SMOKE_WORKER_WITHOUT_ORIGIN_URL: workerWithoutOrigin,
+  SMOKE_WORKER_WITHOUT_ORIGIN_LOG: workerWithoutOriginLog = "",
   // eslint-disable-next-line no-restricted-properties
 } = process.env;
 
@@ -149,4 +153,9 @@ test("without WEB_APP_ORIGIN, the production Worker fails env validation", async
   const response = await fetch(new URL("/", workerWithoutOrigin));
 
   await expectStatus(response, 500);
+  // The response doesn't say why, but the Worker logs the failed validation.
+  // Only WEB_APP_ORIGIN's validation has this message.
+  await expect
+    .poll(() => readFileSync(workerWithoutOriginLog, "utf8"))
+    .toContain("Required in production: set it to the web app's origin");
 });

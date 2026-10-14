@@ -45,15 +45,12 @@ export default async function setup() {
       ...secrets,
       SMOKE_STATE_DIR: stateDir,
     });
-    const workerWithoutOrigin = await preview(
-      groups,
-      join(dir, "without-origin.log"),
-      {
-        ...secrets,
-        WEB_APP_ORIGIN: undefined,
-        SMOKE_STATE_DIR: join(dir, "without-origin"),
-      },
-    );
+    const withoutOriginLog = join(dir, "without-origin.log");
+    const workerWithoutOrigin = await preview(groups, withoutOriginLog, {
+      ...secrets,
+      WEB_APP_ORIGIN: undefined,
+      SMOKE_STATE_DIR: join(dir, "without-origin"),
+    });
     // Neither the ids nor the insert order follow the creation times.
     await queryD1(
       worker,
@@ -68,6 +65,7 @@ export default async function setup() {
     Object.assign(process.env, {
       SMOKE_WORKER_URL: worker,
       SMOKE_WORKER_WITHOUT_ORIGIN_URL: workerWithoutOrigin,
+      SMOKE_WORKER_WITHOUT_ORIGIN_LOG: withoutOriginLog,
     });
   } catch (error) {
     teardown();
