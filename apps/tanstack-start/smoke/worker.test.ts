@@ -168,6 +168,26 @@ test("Discord sign-in returns an authorization URL and writes a verification row
   });
 });
 
+// An empty body is rejected without writing anything, but still counts
+// towards the limit. The addresses are this test's own, so the other tests'
+// sign-ins land in other buckets.
+test("one client's sign-in rate limit doesn't block another client", async () => {
+  const signIn = (ip: string) =>
+    fetch(new URL("/api/auth/sign-in/social", workerUrl), {
+      method: "POST",
+      headers: { "content-type": "application/json", "cf-connecting-ip": ip },
+      body: "{}",
+    });
+
+  let response = await signIn("203.0.113.1");
+  for (let i = 0; i < 10 && response.status !== 429; i++) {
+    response = await signIn("203.0.113.1");
+  }
+  await expectStatus(response, 429);
+
+  await expectStatus(await signIn("203.0.113.2"), 400);
+});
+
 // In development, better-auth renders its own error page instead.
 test("the better-auth error page redirects to the app in production", async () => {
   const response = await fetch(

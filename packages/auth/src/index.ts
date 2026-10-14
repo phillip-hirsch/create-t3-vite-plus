@@ -35,6 +35,9 @@ export function initAuth(options: {
       },
     },
     trustedOrigins: ["expo://"],
+    // Cloudflare sets this to the client's address. The rate limiter keys its
+    // buckets on it, and without it every client would share one.
+    advanced: { ipAddress: { ipAddressHeaders: ["cf-connecting-ip"] } },
     onAPIError: {
       onError(error, ctx) {
         console.error("BETTER AUTH API ERROR", error, ctx);
