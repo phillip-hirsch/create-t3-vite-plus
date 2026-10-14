@@ -10,10 +10,9 @@
   "license": "MIT",
   "scripts": {
     "clean": "git clean -xdf .cache dist node_modules",
-    "generate": "dotenv -e ../../.env -- vp dlx @better-auth/cli generate --config script/auth-cli.ts --output ../db/src/auth-schema.ts"
+    "generate": "dotenv -e ../../.env -- vp exec auth generate --config script/auth-cli.ts --output ../db/src/auth-schema.ts"
   },
   "dependencies": {
-    "@acme/db": "workspace:*",
     "@better-auth/expo": "catalog:",
     "@t3-oss/env-core": "^0.13.8",
     "better-auth": "catalog:",
@@ -21,7 +20,7 @@
   },
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",
-    "@better-auth/cli": "catalog:",
+    "auth": "catalog:",
     "typescript": "catalog:",
     "vite-plus": "catalog:"
   }

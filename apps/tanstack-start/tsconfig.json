@@ -1,12 +1,13 @@
 {
   "extends": "@acme/tsconfig/base.json",
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "lib": ["ES2022", "dom"],
     "jsx": "preserve",
     "paths": {
       "~/*": ["./src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", ".cloudflare/types/index.d.ts"],
   "exclude": ["node_modules"]
 }

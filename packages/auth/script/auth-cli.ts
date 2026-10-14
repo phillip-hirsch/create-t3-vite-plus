@@ -5,7 +5,7 @@
  * DO NOT USE THIS FILE DIRECTLY IN YOUR APPLICATION.
  *
  * This configuration is consumed by the CLI command:
- * `vp dlx @better-auth/cli generate --config script/auth-cli.ts --output ../db/src/auth-schema.ts`
+ * `vp exec auth generate --config script/auth-cli.ts --output ../db/src/auth-schema.ts`
  *
  * For actual authentication usage, import from "../src/index.ts" instead.
  */
@@ -19,8 +19,12 @@ import { initAuth } from "../src/index";
  * @warning Use the main auth configuration from "../src/index.ts" for your application.
  */
 export const auth = initAuth({
+  // Stub: generating the schema never queries, and the real client imports
+  // `cloudflare:workers`, which Node can't load. The CLI logs a "Drizzle
+  // schema mismatch" for the stub, which is expected.
+  db: {},
   baseUrl: "http://localhost:3000",
-  productionUrl: "http://localhost:3000",
+  webAppOrigin: "http://localhost:3000",
   secret: "secret",
   discordClientId: "1234567890",
   discordClientSecret: "1234567890",

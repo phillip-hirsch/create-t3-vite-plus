@@ -68,3 +68,19 @@ jobs:
 
       - name: Build
         run: vp run build
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: voidzero-dev/setup-vp@v1.21.1
+        with:
+          node-version-file: .nvmrc
+          cache: true
+
+      - name: Build
+        run: vp run build
+
+      - name: Test
+        run: vp run test

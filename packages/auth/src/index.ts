@@ -4,28 +4,25 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { oAuthProxy } from "better-auth/plugins";
 
-import { db } from "@acme/db/client";
-
-export function initAuth<
-  TExtraPlugins extends BetterAuthPlugin[] = [],
->(options: {
+export function initAuth(options: {
+  db: Parameters<typeof drizzleAdapter>[0];
   baseUrl: string;
-  productionUrl: string;
+  webAppOrigin: string;
   secret: string | undefined;
 
   discordClientId: string;
   discordClientSecret: string;
-  extraPlugins?: TExtraPlugins;
+  extraPlugins?: BetterAuthPlugin[];
 }) {
   const config = {
-    database: drizzleAdapter(db, {
-      provider: "pg",
+    database: drizzleAdapter(options.db, {
+      provider: "sqlite",
     }),
     baseURL: options.baseUrl,
     secret: options.secret,
     plugins: [
       oAuthProxy({
-        productionURL: options.productionUrl,
+        productionURL: options.webAppOrigin,
       }),
       expo(),
       ...(options.extraPlugins ?? []),
@@ -34,10 +31,13 @@ export function initAuth<
       discord: {
         clientId: options.discordClientId,
         clientSecret: options.discordClientSecret,
-        redirectURI: `${options.productionUrl}/api/auth/callback/discord`,
+        redirectURI: `${options.webAppOrigin}/api/auth/callback/discord`,
       },
     },
     trustedOrigins: ["expo://"],
+    // Cloudflare sets this to the client's address. The rate limiter keys its
+    // buckets on it, and without it every client would share one.
+    advanced: { ipAddress: { ipAddressHeaders: ["cf-connecting-ip"] } },
     onAPIError: {
       onError(error, ctx) {
         console.error("BETTER AUTH API ERROR", error, ctx);

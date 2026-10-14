@@ -8,6 +8,10 @@ A T3 starter monorepo: a web app and a mobile app sharing typed packages, built 
 The TanStack Start app; it also serves the API the mobile app calls.
 _Avoid_: Next.js app, server, backend
 
+**Web app origin**:
+The public origin the deployed web app is served from; auth callbacks and the mobile app's API calls are built on it.
+_Avoid_: redirect proxy URL, production URL, base URL
+
 **Mobile app**:
 The Expo app; a client of the web app's API.
 _Avoid_: native app, Expo app

@@ -1,28 +1,19 @@
+import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
-import { nitro } from "nitro/vite";
-import { defineConfig, esmExternalRequirePlugin, lazyPlugins } from "vite-plus";
+import { defineConfig, lazyPlugins } from "vite-plus";
 
 import { typecheck } from "@acme/tsconfig/typecheck";
+
+// The smoke suite sets this to preview against its own local state, and
+// without the inspector: previews that start together can pick the same free
+// port for it, and then the one that loses answers every request with a 500.
+const smokeStateDir = process.env.SMOKE_STATE_DIR;
 
 export default defineConfig({
   resolve: {
     tsconfigPaths: true,
-  },
-  environments: {
-    ssr: {
-      build: {
-        rolldownOptions: {
-          // Keep React requires visible to Nitro so SSR uses one React instance.
-          // Rolldown ignores this plugin if it comes from a different
-          // vite-plus-core copy than the one building. `vp run` from the repo
-          // root builds with the root's copy, so the root devDepends on
-          // `@types/node` to resolve the same peer variant as this app.
-          plugins: [esmExternalRequirePlugin({ external: ["react"] })],
-        },
-      },
-    },
   },
   server: {
     // Listen on all interfaces so the mobile app can reach the API.
@@ -31,7 +22,11 @@ export default defineConfig({
     strictPort: true,
   },
   plugins: lazyPlugins(() => [
-    nitro(),
+    cloudflare({
+      viteEnvironment: { name: "ssr" },
+      persistState: { path: smokeStateDir ?? ".cloudflare/state" },
+      inspectorPort: smokeStateDir ? false : undefined,
+    }),
     tanstackStart(),
     viteReact(),
     tailwindcss(),
@@ -41,28 +36,23 @@ export default defineConfig({
       build: {
         command: "vp build",
         // Cached tasks get a clean environment, so pass through (and
-        // fingerprint) the variables the app's env schema and Nitro read, including
-        // the Vercel provider variables Nitro uses to pick a deploy preset.
+        // fingerprint) the variables the build reads.
         cache: {
-          // Nitro reads its previous output before overwriting it.
-          input: [{ auto: true }, "!.nitro/**", "!.output/**"],
-          env: [
-            "SKIP_ENV_VALIDATION",
-            "POSTGRES_URL",
-            "AUTH_*",
-            "NODE_ENV",
-            "PORT",
-            "NITRO_PRESET",
-            "SERVER_PRESET",
-            "VERCEL",
-            "VERCEL_*",
-            "NOW_BUILDER",
-            "GITHUB_ACTIONS",
-            "NITRO_COMPATIBILITY_DATE",
-            "SERVER_COMPATIBILITY_DATE",
-            "COMPATIBILITY_DATE",
+          // The Cloudflare plugin reads its previous output before
+          // overwriting it.
+          input: [
+            { auto: true },
+            "!.cloudflare/**",
+            "!.wrangler/**",
+            "!dist/**",
           ],
+          env: ["NODE_ENV", "CLOUDFLARE_ENV"],
         },
+      },
+      deploy: {
+        command: "cf deploy --prebuilt",
+        dependsOn: ["build"],
+        cache: false,
       },
       typecheck,
     },
