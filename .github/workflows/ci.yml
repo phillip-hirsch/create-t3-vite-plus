@@ -15,9 +15,11 @@ env:
   FORCE_COLOR: 3
   SKIP_ENV_VALIDATION: 1
 
-# `vp run` stops at the first failure, so each check is its own job.
+# `vp run verify` is the same script the pre-push hook runs. It stops at the
+# first failure. Build and the smoke suite are too slow for the hook, so they
+# run only here.
 jobs:
-  lint:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -27,34 +29,8 @@ jobs:
           node-version-file: .nvmrc
           cache: true
 
-      - name: Lint
-        run: vp lint && vp run lint:ws
-
-  format:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-
-      - uses: voidzero-dev/setup-vp@v1.21.1
-        with:
-          node-version-file: .nvmrc
-          cache: true
-
-      - name: Format
-        run: vp fmt --check
-
-  typecheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-
-      - uses: voidzero-dev/setup-vp@v1.21.1
-        with:
-          node-version-file: .nvmrc
-          cache: true
-
-      - name: Typecheck
-        run: vp run typecheck
+      - name: Install, lint, format and typecheck
+        run: vp run verify
 
   build:
     runs-on: ubuntu-latest

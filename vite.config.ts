@@ -69,7 +69,7 @@ export default defineConfig({
       typeAware: true,
       reportUnusedDisableDirectives: "warn",
     },
-    ignorePatterns: ["**/*.config.*", "packages/auth/script/**"],
+    ignorePatterns: ["**/*.config.*", "packages/auth/script/**", "scripts/**"],
     rules: {
       "for-direction": "error",
       "no-array-constructor": "error",
