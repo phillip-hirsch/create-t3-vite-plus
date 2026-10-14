@@ -31,6 +31,10 @@ export default defineConfig({
       },
     ],
   },
+  // Lets `vp test` run the web app's smoke suite from the repository root.
+  test: {
+    projects: ["apps/tanstack-start"],
+  },
   fmt: {
     printWidth: 80,
     sortPackageJson: false,
