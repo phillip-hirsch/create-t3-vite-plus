@@ -36,9 +36,11 @@ export const trpc = createTRPCOptionsProxy<AppRouter>({
           headers.set("x-trpc-source", "expo-react");
 
           const cookies = await authClient.getCookie();
+
           if (cookies) {
             headers.set("Cookie", cookies);
           }
+
           return headers;
         },
       }),

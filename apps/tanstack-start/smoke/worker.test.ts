@@ -35,12 +35,14 @@ test("the home page server-renders", async () => {
 
   await expectStatus(response, 200);
   expect(response.headers.get("content-type")).toContain("text/html");
+
   // A seeded post, so the page rendered with data from D1. The hydration
   // scripts carry the posts too, so only the markup outside them counts.
   const markup = (await response.text()).replaceAll(
     /<script.*?<\/script>/gis,
     "",
   );
+
   expect(markup).toContain("Newest post");
 });
 
@@ -180,9 +182,11 @@ test("one client's sign-in rate limit doesn't block another client", async () =>
     });
 
   let response = await signIn("203.0.113.1");
+
   for (let i = 0; i < 10 && response.status !== 429; i++) {
     response = await signIn("203.0.113.1");
   }
+
   await expectStatus(response, 429);
 
   await expectStatus(await signIn("203.0.113.2"), 400);

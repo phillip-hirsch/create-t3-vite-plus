@@ -17,12 +17,15 @@ const ThemeModeSchema = z.enum(["light", "dark", "auto"]);
 const themeKey = "theme-mode";
 
 export type ThemeMode = z.output<typeof ThemeModeSchema>;
+
 export type ResolvedTheme = Exclude<ThemeMode, "auto">;
 
 const getStoredThemeMode = (): ThemeMode => {
   if (typeof window === "undefined") return "auto";
+
   try {
     const storedTheme = localStorage.getItem(themeKey);
+
     return ThemeModeSchema.parse(storedTheme);
   } catch {
     return "auto";
@@ -40,6 +43,7 @@ const setStoredThemeMode = (theme: ThemeMode) => {
 
 const getSystemTheme = () => {
   if (typeof window === "undefined") return "light";
+
   return window.matchMedia("(prefers-color-scheme: dark)").matches
     ? "dark"
     : "light";
@@ -60,6 +64,7 @@ const setupPreferredListener = () => {
   const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
   const handler = () => updateThemeClass("auto");
   mediaQuery.addEventListener("change", handler);
+
   return () => mediaQuery.removeEventListener("change", handler);
 };
 
@@ -68,6 +73,7 @@ const getNextTheme = (current: ThemeMode): ThemeMode => {
     getSystemTheme() === "dark"
       ? ["auto", "light", "dark"]
       : ["auto", "dark", "light"];
+
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return themes[(themes.indexOf(current) + 1) % themes.length]!;
 };
@@ -76,6 +82,7 @@ export const themeDetectorScript = (function () {
   function themeFn() {
     const isValidTheme = (theme: string): theme is ThemeMode => {
       const validThemes = ["light", "dark", "auto"] as const;
+
       return validThemes.includes(theme as ThemeMode);
     };
 
@@ -87,11 +94,13 @@ export const themeDetectorScript = (function () {
         .matches
         ? "dark"
         : "light";
+
       document.documentElement.classList.add(autoTheme, "auto");
     } else {
       document.documentElement.classList.add(validTheme);
     }
   }
+
   return `(${themeFn.toString()})();`;
 })();
 
@@ -101,6 +110,7 @@ interface ThemeContextProps {
   setTheme: (theme: ThemeMode) => void;
   toggleMode: () => void;
 }
+
 const ThemeContext = React.createContext<ThemeContextProps | undefined>(
   undefined,
 );
@@ -110,6 +120,7 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
 
   React.useEffect(() => {
     if (themeMode !== "auto") return;
+
     return setupPreferredListener();
   }, [themeMode]);
 
@@ -141,9 +152,11 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
 
 export function useTheme() {
   const context = React.use(ThemeContext);
+
   if (!context) {
     throw new Error("useTheme must be used within a ThemeProvider");
   }
+
   return context;
 }
 

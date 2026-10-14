@@ -8,6 +8,7 @@ export async function queryD1(
   sql: string,
 ): Promise<unknown> {
   const { id } = config.worker.env.DB;
+
   const response = await fetch(
     new URL(`/cdn-cgi/local/explorer/api/d1/database/${id}/raw`, workerUrl),
     {
@@ -16,8 +17,10 @@ export async function queryD1(
       body: JSON.stringify({ sql }),
     },
   );
+
   if (!response.ok) {
     throw new Error(`D1 query failed: ${await response.text()}`);
   }
+
   return response.json();
 }

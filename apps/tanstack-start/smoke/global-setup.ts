@@ -25,6 +25,7 @@ export default async function setup() {
   const dir = mkdtempSync(join(tmpdir(), "acme-smoke-"));
   // The process groups of everything the setup starts.
   const groups: number[] = [];
+
   // Synchronous, so that it can also run as the process exits: Vitest doesn't
   // call the teardown when it's interrupted.
   const teardown = () => {
@@ -32,22 +33,27 @@ export default async function setup() {
     stop(groups);
     rmSync(dir, { recursive: true, force: true });
   };
+
   process.once("exit", teardown);
 
   try {
     const stateDir = join(dir, "with-origin");
     const log = join(dir, "with-origin.log");
     await migrate(groups, stateDir, log);
+
     const worker = await preview(groups, log, {
       ...secrets,
       SMOKE_STATE_DIR: stateDir,
     });
+
     const withoutOriginLog = join(dir, "without-origin.log");
+
     const workerWithoutOrigin = await preview(groups, withoutOriginLog, {
       ...secrets,
       WEB_APP_ORIGIN: undefined,
       SMOKE_STATE_DIR: join(dir, "without-origin"),
     });
+
     // Neither the ids nor the insert order follow the creation times.
     await queryD1(
       worker,
@@ -69,6 +75,7 @@ export default async function setup() {
     teardown();
     throw error;
   }
+
   return teardown;
 }
 
@@ -82,6 +89,7 @@ function start(
   env?: Record<string, string | undefined>,
 ) {
   const output = openSync(log, "a");
+
   const child = spawn("vp", args, {
     cwd: app,
     detached: true,
@@ -89,8 +97,11 @@ function start(
     env: { ...process.env, ...env },
     stdio: ["ignore", output, output],
   });
+
   closeSync(output);
+
   if (child.pid !== undefined) groups.push(child.pid);
+
   return child;
 }
 
@@ -106,7 +117,9 @@ async function migrate(groups: number[], stateDir: string, log: string) {
     stateDir,
     "--quiet",
   ]);
+
   await once(child, "exit");
+
   if (child.exitCode !== 0) {
     throw new Error(`The migration failed:\n${readFileSync(log, "utf8")}`);
   }
@@ -120,6 +133,7 @@ async function preview(
 ) {
   const port = await freePort();
   const url = `http://127.0.0.1:${port}`;
+
   const child = start(
     groups,
     log,
@@ -128,14 +142,17 @@ async function preview(
   );
 
   const timeout = AbortSignal.timeout(60_000);
+
   while (child.exitCode === null && !timeout.aborted) {
     try {
       await fetch(url, { signal: timeout });
+
       return url;
     } catch {
       await delay(100);
     }
   }
+
   throw new Error(`vp preview didn't start:\n${readFileSync(log, "utf8")}`);
 }
 
@@ -144,6 +161,7 @@ async function preview(
 function stop(groups: number[]) {
   signal(groups, "SIGTERM");
   const patience = Date.now() + 5000;
+
   while (running(groups)) {
     if (Date.now() > patience) signal(groups, "SIGKILL");
     Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 50);
@@ -166,8 +184,10 @@ function running(groups: number[]) {
   const { stdout } = spawnSync("ps", ["-A", "-o", "pgid=", "-o", "stat="], {
     encoding: "utf8",
   });
+
   return stdout.split("\n").some((line) => {
     const [group, state] = line.trim().split(/\s+/);
+
     return groups.includes(Number(group)) && !state?.startsWith("Z");
   });
 }
@@ -178,8 +198,10 @@ async function freePort() {
   const address = server.address();
   server.close();
   await once(server, "close");
+
   if (address === null || typeof address === "string") {
     throw new Error("Couldn't find a free port.");
   }
+
   return address.port;
 }

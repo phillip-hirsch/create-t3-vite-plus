@@ -19,15 +19,18 @@ const { values } = parseArgs({
     "skip-requests": { type: "boolean" },
   },
 });
+
 const interactive = process.env.VP_CREATE_INTERACTIVE !== "0";
 
 const toName = (value = "") => value.trim().replace(/^@acme\//, "");
 
 function validateName(value?: string) {
   const name = toName(value);
+
   if (!/^[a-z0-9][a-z0-9._-]*$/.test(name)) {
     return "Use lowercase letters, digits, dots, dashes or underscores.";
   }
+
   if (fs.existsSync(name)) {
     return `Directory already exists: ${name}`;
   }
@@ -35,6 +38,7 @@ function validateName(value?: string) {
 
 async function main() {
   let { name, deps } = values;
+
   if (interactive) {
     name ??= await ask(
       prompts.text({
@@ -49,12 +53,15 @@ async function main() {
       }),
     );
   }
+
   if (name === undefined) {
     throw new Error(
       "Missing --name. Pass generator options after -- in vp create.",
     );
   }
+
   const error = validateName(name);
+
   if (error) throw new Error(error);
   name = toName(name);
 
@@ -68,9 +75,11 @@ async function main() {
     skips: { requests: values["skip-requests"] },
     runner: async (command) => {
       const result = await runner(command);
+
       if (result instanceof Error) {
         throw new Error(`\`${command}\` failed in ${name}/\n${result.message}`);
       }
+
       return result;
     },
   });
@@ -78,10 +87,12 @@ async function main() {
 
 async function ask(answer: Promise<string | symbol>) {
   const value = await answer;
+
   if (prompts.isCancel(value)) {
     prompts.cancel("Cancelled");
     process.exit(1);
   }
+
   return value;
 }
 

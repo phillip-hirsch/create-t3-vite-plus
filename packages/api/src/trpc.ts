@@ -31,15 +31,18 @@ export const createTRPCContext = async (opts: {
   auth: Auth;
 }) => {
   const authApi = opts.auth.api;
+
   const session = await authApi.getSession({
     headers: opts.headers,
   });
+
   return {
     authApi,
     session,
     db,
   };
 };
+
 /**
  * 2. INITIALIZATION
  *
@@ -121,6 +124,7 @@ export const protectedProcedure = t.procedure
     if (!ctx.session?.user) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
+
     return next({
       ctx: {
         // infers the `session` as non-nullable

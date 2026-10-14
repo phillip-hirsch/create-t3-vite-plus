@@ -4,6 +4,7 @@ export function getBaseUrl() {
   if (typeof window !== "undefined") {
     return window.location.origin;
   }
+
   // Env validation requires WEB_APP_ORIGIN in production.
   if (env.NODE_ENV === "production" && env.WEB_APP_ORIGIN) {
     return env.WEB_APP_ORIGIN;
